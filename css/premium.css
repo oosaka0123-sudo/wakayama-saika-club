@@ -108,3 +108,14 @@ footer .brand{gap:14px}
 footer .powered-by{font:400 10px/1.7 Arial,'Noto Sans JP',sans-serif;color:#8696a3;letter-spacing:.02em;text-align:center;margin:22px 0 0;padding:13px 0 0;border-top:1px solid rgba(255,255,255,.08)}
 footer .powered-by a{color:#9caab6;text-decoration:none;text-underline-offset:3px}
 footer .powered-by a:hover,footer .powered-by a:focus-visible{color:#ff8a22;text-decoration:underline}
+
+/* Shared footer: restrained logo and identical layout on all public pages */
+footer[data-wsc-footer]{padding:32px 0 25px}
+footer[data-wsc-footer] .brand{display:inline-flex;gap:10px;min-height:0;margin:0 0 15px;align-items:center}
+footer[data-wsc-footer] .brand img{width:60px;height:37px;max-width:60px;flex:0 0 60px;object-fit:contain}
+footer[data-wsc-footer] .brand small{display:block;font:700 8px/1.5 Arial,sans-serif;letter-spacing:.12em}
+footer[data-wsc-footer] .brand span{font-size:15px;line-height:1.25}
+footer[data-wsc-footer] .footer-about{font-size:13px;line-height:1.85;margin:0 0 18px}
+footer[data-wsc-footer] .copyright{font-size:10px;letter-spacing:.1em;margin:0}
+footer[data-wsc-footer] .powered-by{margin:17px 0 0;padding:11px 0 0}
+@media(max-width:380px){footer[data-wsc-footer] .brand small{display:block}footer[data-wsc-footer] .brand span{font-size:14px}}
