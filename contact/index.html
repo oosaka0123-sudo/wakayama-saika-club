@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#0c1720">
+<meta name="description" content="和歌山雑賀クラブへの入会相談や活動についてのお問い合わせ窓口。個人のメールアドレスを公開せず、迷惑送信対策付きの受付フォームを準備しています。">
+<title>CONTACT | お問い合わせ — 和歌山雑賀クラブ</title>
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/premium.css">
+<link rel="stylesheet" href="../css/contact.css">
+<script src="../js/main.js" defer></script>
+<script src="../js/contact-config.js" defer></script>
+<script src="../js/contact-form.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">本文へ移動</a>
+<header class="site-header">
+  <div class="in">
+    <a class="brand" href="../" aria-label="和歌山雑賀クラブ トップへ">
+      <img src="../assets/logo-wsc.svg" width="92" height="56" alt="WSC 船のロゴ">
+      <div><small>WAKAYAMA SAIKA CLUB</small><span>和歌山雑賀クラブ</span></div>
+    </a>
+    <nav class="gnav" aria-label="メインメニュー">
+      <ul>
+        <li><a href="../#about"><small>ABOUT</small><span>クラブ紹介</span></a></li>
+        <li><a href="../#fish"><small>FISHING</small><span>対象魚</span></a></li>
+        <li><a href="../#events"><small>EVENTS</small><span>年間行事</span></a></li>
+        <li><a href="../#gallery"><small>GALLERY</small><span>ギャラリー</span></a></li>
+        <li><a href="../#join"><small>JOIN US</small><span>入会案内</span></a></li>
+      </ul>
+    </nav>
+    <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="drawer" aria-label="メニューを開く"><span class="bars"></span></button>
+  </div>
+</header>
+<nav class="drawer" id="drawer" aria-label="モバイルメニュー" inert>
+  <ul>
+    <li><a href="../#about"><small>ABOUT</small><span>クラブ紹介</span></a></li>
+    <li><a href="../#fish"><small>FISHING</small><span>対象魚</span></a></li>
+    <li><a href="../#events"><small>EVENTS</small><span>年間行事</span></a></li>
+    <li><a href="../#gallery"><small>GALLERY</small><span>ギャラリー</span></a></li>
+    <li><a href="../#join" class="cta"><small>JOIN US</small><span>入会案内</span></a></li>
+  </ul>
+</nav>
+<main id="main">
+  <section class="contact-hero">
+    <div class="wrap">
+      <p class="contact-eyebrow">WAKAYAMA SAIKA CLUB <span>/</span> CONTACT</p>
+      <h1>LET'S<br><em>CONNECT.</em></h1>
+      <p class="contact-hero-ja">お問い合わせ</p>
+      <p class="contact-hero-desc">和歌山の海を愛する仲間として。<br>入会やクラブ活動についてのご相談はこちらから。</p>
+    </div>
+  </section>
+  <section class="contact-page soft">
+    <div class="wrap contact-layout">
+      <div class="contact-intro">
+        <p class="sec-label">01 / GET IN TOUCH</p>
+        <h2><span class="heading-en">DROP US A LINE.</span><span class="heading-jp">お気軽にご連絡ください。</span></h2>
+        <p>入会希望、会の活動内容、ご質問などを受け付ける予定です。内容を確認のうえ、担当者から回答いたします。</p>
+        <div class="contact-trust"><strong>PRIVACY &amp; SECURITY</strong>
+          <p>担当者のメールアドレスはサイト上に掲載しません。フォームには自動送信対策を導入し、いただいた情報はお問い合わせへの対応にのみ使用します。</p>
+        </div>
+        <p class="small-print">※ 送信時に受付サービス（Formspree）へ入力内容が送信されます。迷惑送信を完全に防ぐことはできません。</p>
+      </div>
+      <div class="contact-panel">
+        <div class="contact-panel-top">
+          <span>WSC / CONTACT FORM</span>
+          <strong>お問い合わせフォーム</strong>
+        </div>
+        <p id="contact-status" class="contact-status" role="status">現在、フォームの受付準備中です。受付開始までは送信できません。</p>
+        <form id="wsc-contact-form" method="POST" action="" autocomplete="on">
+          <fieldset id="contact-fields" disabled>
+            <div class="field">
+              <label for="name">お名前 <em>必須</em></label>
+              <input id="name" name="name" type="text" minlength="2" maxlength="80" autocomplete="name" required placeholder="お名前をご入力ください">
+            </div>
+            <div class="field">
+              <label for="email">返信用メールアドレス <em>必須</em></label>
+              <input id="email" name="email" type="email" maxlength="160" autocomplete="email" required placeholder="example@example.com">
+            </div>
+            <div class="field">
+              <label for="category">お問い合わせ種別 <em>必須</em></label>
+              <select id="category" name="category" required>
+                <option value="">選択してください</option>
+                <option value="入会について">入会について</option>
+                <option value="活動について">クラブ活動について</option>
+                <option value="その他">その他</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="message">お問い合わせ内容 <em>必須</em></label>
+              <textarea id="message" name="message" rows="7" minlength="10" maxlength="3000" required placeholder="お問い合わせ内容をご入力ください"></textarea>
+              <small>10〜3000文字でご入力ください。</small>
+            </div>
+            <div class="bot-field" aria-hidden="true"><label for="website">ウェブサイト</label><input id="website" name="_gotcha" type="text" tabindex="-1" autocomplete="off"></div>
+            <label class="contact-consent"><input type="checkbox" name="privacy_consent" value="同意する" required> <span>入力いただいた情報を、お問い合わせへの返信に使用することに同意します。</span></label>
+            <button id="contact-submit" class="contact-submit" type="submit">SEND MESSAGE <span>送信する</span><span aria-hidden="true">→</span></button>
+          </fieldset>
+          <p class="small-print">※ 返信までにお時間をいただくことがあります。緊急の海難連絡には使用しないでください。</p>
+        </form>
+      </div>
+    </div>
+  </section>
+  <section class="contact-footer-cta dark">
+    <div class="wrap">
+      <span class="sec-label">BACK TO THE SEA</span>
+      <h2><span class="heading-en">SEA. CREW. TRADITION.</span><span class="heading-jp">和歌山雑賀クラブ</span></h2>
+      <a class="btn" href="../">BACK TO HOME <span>トップページへ</span></a>
+    </div>
+  </section>
+</main>
+<footer>
+  <div class="wrap">
+    <a class="brand" href="../"><img src="../assets/logo-wsc.svg" width="92" height="56" alt="WSC 船のロゴ"><div><small>WAKAYAMA SAIKA CLUB</small><span>和歌山雑賀クラブ</span></div></a>
+    <p>1981年設立 ／ 会長：東<br>「仲良く、安全に釣りを楽しむ」</p>
+    <p class="copyright">© 2026 WAKAYAMA SAIKA CLUB. ALL RIGHTS RESERVED.</p>
+  </div>
+</footer>
+</body>
+</html>

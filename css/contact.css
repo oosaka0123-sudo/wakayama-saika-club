@@ -1,0 +1,43 @@
+
+/* WSC CONTACT / Mobile-first */
+.contact-hero{margin-top:var(--hh);padding:98px 0 78px;background:linear-gradient(90deg,rgba(6,18,29,.94),rgba(6,18,29,.62)),url('../assets/photos/21992.jpg') center 44%/cover;color:#fff}
+.contact-eyebrow{color:#eaf0f3;font:800 12px/1.5 Arial,sans-serif;letter-spacing:.18em;margin:0 0 25px}
+.contact-eyebrow span{color:var(--orange);padding:0 8px}
+.contact-hero h1{font:900 clamp(57px,9vw,118px)/.94 Impact,"Arial Narrow",Arial,sans-serif;letter-spacing:.015em;margin:0 0 25px}
+.contact-hero h1 em{font-style:normal;color:var(--orange)}
+.contact-hero-ja{font-weight:900;font-size:clamp(24px,3vw,38px);margin:0 0 6px}
+.contact-hero-desc{font-size:clamp(14px,2vw,18px);font-weight:600;margin:0;line-height:1.85}
+.contact-page{padding:76px 0}
+.contact-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:42px}
+.contact-intro{max-width:560px}
+.contact-intro h2{margin-bottom:22px}
+.contact-intro p{margin-top:0}
+.contact-trust{padding:21px 24px;margin:30px 0 14px;background:#e8edef;border-left:4px solid var(--orange)}
+.contact-trust strong{font:900 12px Arial,sans-serif;letter-spacing:.1em}
+.contact-trust p{font-size:14px;margin:10px 0 0}
+.small-print{font-size:13px;color:#5d6771;line-height:1.8}
+.contact-panel{background:#fff;border:1px solid #d9dfe3;box-shadow:0 20px 50px rgba(7,18,26,.07);padding:clamp(20px,3vw,38px);min-width:0}
+.contact-panel-top{border-bottom:1px solid #dde2e5;padding-bottom:18px;margin-bottom:18px}
+.contact-panel-top>span{display:block;color:var(--orange-dark);font:800 11px Arial,sans-serif;letter-spacing:.2em;margin-bottom:5px}
+.contact-panel-top>strong{font-size:22px}
+.contact-status{background:#f2f4f5;border-left:4px solid #74808a;color:#253746;font-size:14px;padding:13px 15px;margin:0 0 22px}
+.contact-status.ready{background:#e9f4ed;border-color:#398959;color:#1b5131}
+.contact-panel fieldset{padding:0;border:0;margin:0;min-width:0}
+.contact-panel fieldset:disabled{opacity:.64}
+.field{margin-bottom:23px}
+.field label{display:block;font-weight:800;font-size:15px;line-height:1.5;margin-bottom:9px}
+.field label em{font-style:normal;font-size:10px;color:#fff;background:#bf521b;padding:2px 7px;margin-left:6px}
+.field input,.field textarea,.field select{font:inherit;font-size:16px;border:1px solid #cbd4d9;border-radius:2px;background:#fff;color:#172630;padding:12px 14px;width:100%;min-width:0;line-height:1.5}
+.field textarea{resize:vertical;min-height:166px}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--orange);outline:2px solid #fa791644;outline-offset:0}
+.field small{font-size:12px;color:#64717b}
+.contact-consent{display:flex;align-items:flex-start;gap:11px;font-size:13px;line-height:1.6;margin-bottom:22px;cursor:pointer}
+.contact-consent input{flex:none;margin-top:5px;width:18px;height:18px;accent-color:var(--orange-dark)}
+.contact-submit{width:100%;padding:14px 17px;min-height:58px;display:flex;align-items:center;gap:12px;justify-content:space-between;background:var(--orange);border:0;color:#0b1520;cursor:pointer;font:900 12px Arial,sans-serif;letter-spacing:.12em}
+.contact-submit span:nth-child(1){font:800 13px Meiryo,sans-serif;letter-spacing:0}
+.contact-submit span:nth-child(2){font-size:22px}
+.contact-submit:disabled{cursor:not-allowed}
+.bot-field{position:absolute!important;left:-9999px!important;width:1px;height:1px;overflow:hidden}
+.contact-footer-cta .btn{margin-top:12px}
+@media(min-width:940px){.contact-layout{grid-template-columns:minmax(0,0.85fr) minmax(0,1.15fr);gap:70px}.contact-hero{padding:117px 0 94px}}
+@media(max-width:640px){.contact-hero{padding:72px 0 58px}.contact-hero h1{font-size:clamp(56px,14vw,82px)}.contact-page{padding:48px 0}.contact-layout{gap:28px}.contact-panel-top>strong{font-size:19px}}
