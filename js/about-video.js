@@ -13,7 +13,7 @@
   var base = new URL('../assets/about-video-parts/', document.currentScript.src);
   var urls = [];
   for (var i = 0; i < count; i += 1) {
-    urls.push(new URL('part' + String(i).padStart(2, '0') + '.bin', base).href);
+    var partUrl = new URL('part' + String(i).padStart(2, '0') + '.bin', base);\n    partUrl.searchParams.set('v', 'original-3620902');\n    urls.push(partUrl.href);
   }
 
   Promise.all(urls.map(function (url) {
