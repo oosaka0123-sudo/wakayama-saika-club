@@ -108,6 +108,8 @@
       root.addEventListener('focusin', stop);
       root.addEventListener('focusout', function () { start(); syncPause(); });
       root.addEventListener('pointerdown', stop);
+      root.addEventListener('pointerup', function () { start(); syncPause(); });
+      root.addEventListener('pointercancel', function () { start(); syncPause(); });
       document.addEventListener('visibilitychange', function () { start(); syncPause(); });
       var onMq = function () { if (pause) pause.hidden = reduce.matches; start(); syncPause(); };
       if (reduce.addEventListener) reduce.addEventListener('change', onMq);
