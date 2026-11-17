@@ -1,0 +1,98 @@
+/* SAIKA — premium bilingual visual layer */
+:root{--orange:#fa7916;--orange-dark:#c86012;--black:#0c1720;--ink:#12232e;--soft:#f2f4f3;--max:1220px}
+body{font-size:17px;color:var(--ink);font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",Meiryo,sans-serif}
+.site-header{background:rgba(9,21,30,.96);border-bottom:1px solid rgba(255,255,255,.17);box-shadow:0 4px 24px #0002}
+.site-header .in{padding:0 clamp(15px,3vw,30px)}
+.brand small{color:var(--orange);font-family:Arial,sans-serif;letter-spacing:.18em;font-size:9px}
+.brand span{letter-spacing:.03em}
+.gnav a{line-height:1.2;padding:9px 12px!important;border:0}
+.gnav a small,.drawer a small{display:block;font:800 10px/1.4 Arial,sans-serif;letter-spacing:.15em;color:var(--orange);margin-bottom:3px}
+.gnav a span,.drawer a span{font-size:13px;display:block}
+.gnav a.cta{border:0;background:var(--orange);border-radius:2px;color:#0c1720}
+.gnav a.cta small{color:#0c1720}
+.drawer{background:#09151e}
+.drawer a{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.drawer a small{order:2;margin:0}
+.drawer a span{font-size:18px}
+.drawer a.cta{padding:14px}
+.menu-btn{border:none;border-radius:2px}
+.hero{background:#08131d}
+.hero .track>figure{min-height:610px;max-height:940px;height:clamp(620px,90svh,900px)}
+.hero img{filter:saturate(.88) contrast(1.08)}
+.hero .shade{background:linear-gradient(90deg,#03121dd9 0%,#03121d55 75%,#03121d30 100%),linear-gradient(0deg,#03121dbe,transparent 70%)}
+.hero-copy{padding:0 clamp(24px,6vw,78px) 108px}
+.hero .eyebrow{border-left:3px solid var(--orange);background:transparent;color:white;padding:0 0 0 13px;font:800 12px/1.4 Arial,sans-serif;letter-spacing:.24em;margin-bottom:24px}
+.hero .sep{color:var(--orange);margin:0 6px}
+.hero h1{font:900 clamp(60px,10.4vw,129px)/.89 Impact,"Arial Narrow",Arial,sans-serif;letter-spacing:-.01em;text-shadow:0 4px 30px #0007;margin-bottom:24px}
+.hero h1 em{color:var(--orange)}
+.hero-jp{font-weight:900;font-size:clamp(22px,3vw,35px);line-height:1.3;letter-spacing:.05em;margin:0 0 10px}
+.hero p.lead{font-size:clamp(14px,2vw,18px);font-weight:600;max-width:40em;line-height:1.8;margin-bottom:24px}
+.btn{border-radius:2px;min-height:58px;padding:12px 22px;gap:12px;font:800 12px/1.4 Arial,sans-serif;letter-spacing:.12em}
+.btn span{font:700 12px/1.4 Meiryo,sans-serif;letter-spacing:0}
+.btn:after{content:"↗";font-size:16px}
+.hero .sl-btn{width:45px;height:45px;top:43%;background:#08131d77;border:1px solid #fffa;font-size:20px}
+.hero .dots{bottom:19px}
+.hero .dots button::before{width:11px;height:11px}
+.hero .pause{bottom:17px;min-width:40px;height:38px;font-size:11px;border:1px solid #fffa}
+.brand-strip{display:flex;align-items:center;justify-content:center;gap:clamp(14px,3vw,36px);overflow:hidden;white-space:nowrap;padding:15px 18px;background:var(--orange);color:#0b1720;font:900 clamp(10px,1.4vw,13px)/1.4 Arial,sans-serif;letter-spacing:.16em}
+.brand-strip b{font-size:13px}
+section{padding:86px 0}
+.wrap{padding:0 clamp(20px,4vw,38px)}
+.sec-label{font:800 12px/1.4 Arial,sans-serif;letter-spacing:.19em;margin-bottom:16px}
+h2{padding:0;margin:0 0 32px;line-height:1.3}
+h2:after{display:none}
+.heading-en{display:block;font:900 clamp(36px,5.6vw,74px)/1 Impact,"Arial Narrow",Arial,sans-serif;letter-spacing:.005em;overflow-wrap:break-word}
+.heading-jp{display:block;font-size:clamp(20px,2.5vw,27px);line-height:1.6;letter-spacing:.02em;margin-top:15px;font-weight:850}
+.dark{background:#0c1720}
+.split{gap:40px}
+.split figure img{aspect-ratio:1.35;object-fit:cover}
+.stats{background:#263743;gap:1px;margin-top:43px}
+.stats div{background:#14242f;padding:25px 12px}
+.stats b{font-family:Arial,sans-serif;font-weight:900}
+.stats span{font-size:13px}
+.cards{gap:15px;margin-top:32px}
+.card{border:1px solid #dae1e4;border-left:4px solid var(--orange);box-shadow:none;padding:25px 27px}
+.card-en{display:block;font:800 11px/1.4 Arial,sans-serif;color:var(--orange-dark);letter-spacing:.17em;margin-bottom:13px}
+.card p{font-size:15px}
+.soft{background:#f3f5f4}
+.fish li{font-size:16px}
+.events li{background:#182834}
+.events .m{background:var(--orange);font-family:Arial,sans-serif}
+.gal{background:#09141d}
+.gal .track>figure{max-height:72svh}
+.fees{gap:13px;margin:25px 0 35px}
+.fee{border:1px solid #d4dbde;border-top:4px solid var(--orange);padding:24px}
+.fee b{font-size:26px}
+.contact{border-top:4px solid var(--orange);background:#0c1720;padding:30px}
+.contact-en{display:block;color:var(--orange);font:900 11px/1.4 Arial,sans-serif;letter-spacing:.2em;margin-bottom:10px}
+.todo{background:#243743;color:#fff;font-size:14px}
+footer{background:#080f17;color:#a9b2ba;padding:48px 0}
+.footer-statement{color:white;font:900 clamp(24px,4vw,45px)/1 Impact,Arial,sans-serif;letter-spacing:.04em;margin:25px 0 12px}
+.copyright{font:700 11px/1.5 Arial,sans-serif;letter-spacing:.15em;color:#8696a3}
+@media(min-width:768px){.menu-btn{display:grid}.gnav{display:none}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:1100px){.gnav{display:block}.menu-btn{display:none}}
+@media(max-width:640px){
+body{font-size:16px}
+.hero .track>figure{height:min(790px,calc(100svh - var(--hh)));min-height:660px}
+.hero .shade{background:linear-gradient(0deg,#04121df5 0%,#04121d83 58%,#04121d38 100%)}
+.hero img{object-position:54% center}
+.hero-copy{padding:0 22px 102px}
+.hero .eyebrow{font-size:10px;letter-spacing:.16em;margin-bottom:16px}
+.hero h1{font-size:clamp(51px,14.3vw,76px);letter-spacing:-.025em;margin-bottom:15px}
+.hero-jp{font-size:23px}
+.hero p.lead{font-size:14px;line-height:1.75;margin-bottom:16px}
+.hero .btns{gap:9px}
+.hero .btn{min-height:52px;padding:10px 14px;font-size:10px;gap:7px}
+.hero .btn span{font-size:10px}
+.hero .sl-btn{top:35%}
+.brand-strip{justify-content:flex-start;gap:20px;font-size:9px}
+section{padding:65px 0}
+.heading-en{font-size:clamp(33px,9vw,50px)}
+.heading-jp{font-size:19px}
+.split{gap:26px}
+.card{padding:23px 20px}
+.gal figcaption{font-size:13px}
+.contact{padding:23px}
+}
+@media(max-width:359px){.hero h1{font-size:47px}.hero .btns{flex-direction:column;align-items:flex-start}.brand-strip{font-size:8px}}
+@media(prefers-reduced-motion:reduce){.split figure img{transition:none}}
