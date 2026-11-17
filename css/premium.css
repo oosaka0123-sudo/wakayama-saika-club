@@ -21,6 +21,8 @@ body{font-size:17px;color:var(--ink);font-family:"Hiragino Kaku Gothic ProN","No
 .hero img{filter:saturate(.88) contrast(1.08)}
 .hero .shade{background:linear-gradient(90deg,#03121dd9 0%,#03121d55 75%,#03121d30 100%),linear-gradient(0deg,#03121dbe,transparent 70%)}
 .hero-copy{padding:0 clamp(24px,6vw,78px) 108px}
+.hero-copy>*{pointer-events:none}
+.hero-copy a{pointer-events:auto}
 .hero .eyebrow{border-left:3px solid var(--orange);background:transparent;color:white;padding:0 0 0 13px;font:800 12px/1.4 Arial,sans-serif;letter-spacing:.24em;margin-bottom:24px}
 .hero .sep{color:var(--orange);margin:0 6px}
 .hero h1{font:900 clamp(60px,10.4vw,129px)/.89 Impact,"Arial Narrow",Arial,sans-serif;letter-spacing:-.01em;text-shadow:0 4px 30px #0007;margin-bottom:24px}
@@ -30,7 +32,8 @@ body{font-size:17px;color:var(--ink);font-family:"Hiragino Kaku Gothic ProN","No
 .btn{border-radius:2px;min-height:58px;padding:12px 22px;gap:12px;font:800 12px/1.4 Arial,sans-serif;letter-spacing:.12em}
 .btn span{font:700 12px/1.4 Meiryo,sans-serif;letter-spacing:0}
 .btn:after{content:"↗";font-size:16px}
-.hero .sl-btn{width:45px;height:45px;top:43%;background:#08131d77;border:1px solid #fffa;font-size:20px}
+.hero .sl-btn{width:42px;height:42px;top:43%;background:rgba(8,19,29,.28);border:1px solid rgba(255,255,255,.42);font-size:17px;opacity:.72;transition:opacity .2s,background .2s,border-color .2s}
+.hero .sl-btn:hover,.hero .sl-btn:focus-visible{opacity:1;background:rgba(8,19,29,.62);border-color:rgba(255,255,255,.8);color:#fff}
 .hero .dots{bottom:19px}
 .hero .dots button::before{width:11px;height:11px}
 .hero .pause{bottom:17px;min-width:40px;height:38px;font-size:11px;border:1px solid #fffa}
@@ -84,7 +87,7 @@ body{font-size:16px}
 .hero .btns{gap:9px}
 .hero .btn{min-height:52px;padding:10px 14px;font-size:10px;gap:7px}
 .hero .btn span{font-size:10px}
-.hero .sl-btn{top:35%}
+.hero .sl-btn{top:35%;width:40px;height:40px;font-size:16px;opacity:.66}
 .brand-strip{justify-content:flex-start;gap:20px;font-size:9px}
 section{padding:65px 0}
 .heading-en{font-size:clamp(33px,9vw,50px)}
