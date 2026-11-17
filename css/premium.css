@@ -96,3 +96,10 @@ section{padding:65px 0}
 }
 @media(max-width:359px){.hero h1{font-size:47px}.hero .btns{flex-direction:column;align-items:flex-start}.brand-strip{font-size:8px}}
 @media(prefers-reduced-motion:reduce){.split figure img{transition:none}}
+
+/* Approved WSC motorboat logo — header and footer */
+.site-header .brand img{width:84px;height:52px;max-width:none;object-fit:contain;flex:0 0 84px}
+footer .brand img{width:105px;height:64px;max-width:none;object-fit:contain;flex:0 0 105px}
+.site-header .brand{gap:10px}
+footer .brand{gap:14px}
+@media(max-width:380px){.site-header .brand img{width:76px;height:48px;flex-basis:76px}.site-header .brand{gap:8px}}
