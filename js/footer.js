@@ -15,7 +15,7 @@
       '</a>',
       '<p class="footer-about">1981年設立 ／ 会長：東 秀樹<br>「仲良く、安全に釣りを楽しむ」</p>',
       '<p class="copyright">© 2026 WAKAYAMA SAIKA CLUB. ALL RIGHTS RESERVED.</p>',
-      '<p class="powered-by">Powered by <a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">チャットホームページ</a><span aria-hidden="true"> · </span><a href="https://rss7.net/" target="_blank" rel="noopener noreferrer">rss7.net</a></p>',
+      '<p class="powered-by">Powered by <a href="https://chat.rss7.net/" target="_blank" rel="noopener noreferrer">チャットホームページ</a><span aria-hidden="true"> · </span><a href="https://rss7.net/" target="_blank" rel="noopener noreferrer">rss7.net</a></p>',
     '</div>'
   ].join('');
 })();
