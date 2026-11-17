@@ -117,4 +117,39 @@
       syncPause();
     }
   });
+
+  // WSC subtle scroll-reveal: lightweight, one-time movement for all card types.
+  // Progressive enhancement: content is visible without JS / IntersectionObserver.
+  (function () {
+    if (!('IntersectionObserver' in window) || reduce.matches) return;
+    var selector = '.cards > .card, .stats > div, .events > li, .fees > .fee, .album-grid > .photo-card, .contact-panel, .contact-trust';
+    var cards = Array.prototype.slice.call(document.querySelectorAll(selector));
+    if (!cards.length) return;
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('wsc-reveal-visible');
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -18px 0px' });
+
+    cards.forEach(function (card, index) {
+      // Slight stagger only for neighboring items, without long waiting times.
+      card.style.setProperty('--wsc-reveal-delay', ((index % 3) * 50) + 'ms');
+      card.classList.add('wsc-reveal-card');
+      observer.observe(card);
+    });
+
+    // Respect motion-setting changes while the page remains open.
+    if (reduce.addEventListener) reduce.addEventListener('change', function () {
+      if (!reduce.matches) return;
+      cards.forEach(function (card) {
+        card.classList.add('wsc-reveal-visible');
+        observer.unobserve(card);
+      });
+      observer.disconnect();
+    });
+  })();
+
 })();
