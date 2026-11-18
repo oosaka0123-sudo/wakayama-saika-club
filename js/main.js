@@ -118,11 +118,11 @@
     }
   });
 
-  // WSC subtle scroll-reveal: lightweight, one-time movement for all card types.
+  // WSC expressive scroll-reveal: alternating drift, lift and gentle scale across every page.
   // Progressive enhancement: content is visible without JS / IntersectionObserver.
   (function () {
     if (!('IntersectionObserver' in window) || reduce.matches) return;
-    var selector = '.cards > .card, .stats > div, .events > li, .fees > .fee, .album-grid > .photo-card, .contact-panel, .contact-trust';
+    var selector = '.cards > .card, .stats > div, .events > li, .fees > .fee, .album-grid > .photo-card, .contact-panel, .contact-trust, .contact-intro, .value-grid > .value-card, .story-grid > figure, .story-copy, .sticker-frame';
     var cards = Array.prototype.slice.call(document.querySelectorAll(selector));
     if (!cards.length) return;
 
@@ -135,8 +135,10 @@
     }, { threshold: 0.08, rootMargin: '0px 0px -18px 0px' });
 
     cards.forEach(function (card, index) {
-      // Slight stagger only for neighboring items, without long waiting times.
-      card.style.setProperty('--wsc-reveal-delay', ((index % 3) * 50) + 'ms');
+      // Moderate stagger and alternating left/right entrance, including about page cards.
+      card.style.setProperty('--wsc-reveal-delay', ((index % 3) * 100) + 'ms');
+      card.style.setProperty('--wsc-reveal-x', (index % 2 === 0 ? '-18px' : '18px'));
+      card.style.setProperty('--wsc-reveal-rotate', (index % 2 === 0 ? '-1.1deg' : '1.1deg'));
       card.classList.add('wsc-reveal-card');
       observer.observe(card);
     });
