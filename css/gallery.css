@@ -3,20 +3,23 @@
 .album-hero:before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(4,15,24,.12) 0%,rgba(4,15,24,.25) 38%,rgba(4,15,24,.82) 100%),linear-gradient(0deg,rgba(3,12,19,.86) 0%,rgba(3,12,19,.30) 48%,rgba(3,12,19,.04) 82%);pointer-events:none}
 .album-hero .wrap{position:relative;z-index:2;width:100%}
 
-/* Gallery hero photo: slow, cinematic Ken Burns motion; text and overlay stay still. */
+/* Gallery hero photo: visibly slow horizontal pan + gentle zoom. Text and overlay stay still. */
 .album-hero:after{
-  content:"";position:absolute;inset:-3%;z-index:0;pointer-events:none;
+  content:"";position:absolute;inset:-12%;z-index:0;pointer-events:none;
   background:url('../assets/photos/21995.jpg') 42% 43%/cover no-repeat;
   transform-origin:46% 52%;
-  animation:wscGalleryPhotoDrift 32s ease-in-out infinite alternate;
+  animation:wscGalleryPhotoDrift 16s linear infinite alternate;
   will-change:transform;
 }
 @keyframes wscGalleryPhotoDrift{
-  0%{transform:translate3d(-.7%,.1%,0) scale(1.035)}
-  100%{transform:translate3d(.7%,-.45%,0) scale(1.105)}
+  0%{transform:translate3d(-6%,0,0) scale(1.025)}
+  100%{transform:translate3d(6%,-1%,0) scale(1.125)}
+}
+@media(max-width:640px){
+  .album-hero:after{animation-duration:12s}
 }
 @media(prefers-reduced-motion:reduce){
-  .album-hero:after{animation:none;transform:scale(1.035);will-change:auto}
+  .album-hero:after{animation:none;transform:scale(1.025);will-change:auto}
 }
 
 .album-kicker{font:800 clamp(10px,1.2vw,12px)/1.5 Arial,sans-serif;letter-spacing:.19em;margin:0 0 30px}
