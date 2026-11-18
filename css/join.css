@@ -1,0 +1,33 @@
+/* WSC membership: scoped styling, preserve shared navigation/footer */
+.join-hero{margin-top:var(--hh);padding:100px 0 90px;background:linear-gradient(100deg,rgba(4,14,25,.95),rgba(4,14,25,.5)),url('../assets/photos/21992.jpg') center center/cover;color:#fff}
+.join-eyebrow{font:800 12px/1.5 Arial,sans-serif;letter-spacing:.18em;color:var(--orange);margin:0 0 26px}
+.join-hero h1{font:900 clamp(32px,5vw,66px)/1.38 "Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",Meiryo,sans-serif;letter-spacing:.015em;margin:0 0 20px}
+.join-hero h1 em{font-style:normal;color:var(--orange)}
+.join-hero-en{font:900 clamp(16px,2vw,24px)/1.5 Arial,sans-serif;letter-spacing:.08em;margin:0 0 20px}
+.join-hero-desc{font-weight:600;font-size:clamp(14px,2vw,19px);line-height:1.95;margin:0}
+.join-section{padding:78px 0}
+.join-heading{font-size:clamp(26px,3vw,42px);line-height:1.45;margin:0 0 18px}
+.join-lead{max-width:760px;line-height:1.95;margin:0 0 28px}
+.join-fees{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:32px 0 20px}
+.join-fee{min-width:0;padding:27px 25px;background:#fff;border:1px solid #d8e0e3;border-top:4px solid var(--orange);box-shadow:0 14px 26px rgba(8,21,28,.07)}
+.join-fee span{display:block;font-weight:800;font-size:13px;margin-bottom:16px;color:#566370}
+.join-fee strong{font-size:clamp(18px,2.4vw,26px);line-height:1.4;color:#10242f;overflow-wrap:anywhere}
+.join-note{font-size:13px;color:#52616b;line-height:1.8}
+.join-dark{background:#0a1a25;color:#f6f8f9}
+.join-dark .join-heading,.join-dark .join-lead{color:#fff}
+.join-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:30px 0}
+.join-feature{background:#112b3a;border:1px solid #ffffff20;padding:28px;min-width:0}
+.join-feature span{font:800 11px Arial,sans-serif;letter-spacing:.12em;color:var(--orange)}
+.join-feature h3{font-size:20px;color:#fff;margin:14px 0}
+.join-feature p{color:#d4dee3;line-height:1.8;margin:0}
+.join-more{margin:28px 0 0}
+.join-faq{max-width:860px}
+.join-faq article{border-bottom:1px solid #cbd4d9;padding:22px 0}
+.join-faq h3{font-size:18px;margin:0 0 12px}
+.join-faq p{margin:0;line-height:1.85}
+.join-cta{background:#102736;color:#fff}
+.join-cta .join-heading{color:#fff}
+.join-cta p{line-height:1.9}
+.join-status{max-width:680px;border-left:4px solid var(--orange);padding:14px 18px;background:#ffffff16}
+.join-cta .btn{margin-top:15px}
+@media(max-width:720px){.join-hero{padding:70px 0 65px}.join-section{padding:50px 0}.join-fees,.join-grid{grid-template-columns:1fr}.join-fee{padding:22px}.join-feature{padding:22px}.join-hero-desc br{display:none}}
