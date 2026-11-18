@@ -123,17 +123,17 @@ footer[data-wsc-footer] .copyright{font-size:10px;letter-spacing:.1em;margin:0}
 footer[data-wsc-footer] .powered-by{margin:17px 0 0;padding:11px 0 0}
 @media(max-width:380px){footer[data-wsc-footer] .brand small{display:block}footer[data-wsc-footer] .brand span{font-size:14px}}
 
-/* WSC subtle scroll-reveal: no layout shift, accessible motion preference */
+/* WSC expressive scroll entrance, shared by every page; text/controls remain accessible. */
 @media (prefers-reduced-motion: no-preference) {
   .wsc-reveal-card{
-    opacity:.90;
-    transform:translate3d(0, 10px, 0);
-    transition:transform 540ms cubic-bezier(.22,1,.36,1), opacity 540ms ease;
+    opacity:.22;
+    transform:translate3d(var(--wsc-reveal-x,0px),40px,0) rotate(var(--wsc-reveal-rotate,0deg)) scale(.955);
+    transition:transform 820ms cubic-bezier(.16,1,.3,1),opacity 780ms ease-out;
     transition-delay:var(--wsc-reveal-delay,0ms);
   }
   .wsc-reveal-card.wsc-reveal-visible{
     opacity:1;
-    transform:translate3d(0,0,0);
+    transform:translate3d(0,0,0) rotate(0) scale(1);
   }
 }
 @media (prefers-reduced-motion: reduce), print {
