@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>和歌山雑賀クラブ｜1981年設立・和歌山の船釣りクラブ</title>
 <meta name="description" content="和歌山雑賀クラブは1981年設立。和歌山周辺の海で船釣りを楽しみ、釣り情報の共有、海上での助け合い、年間行事を大切にするクラブです。会員募集・入会条件は専用ページでご案内します。">
-<meta name="robots" content="index,follow">
+<meta name="robots" content="noindex,follow">
 <meta name="theme-color" content="#111111">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=20261119-boat">
 <link rel="stylesheet" href="css/style.css">
@@ -13,6 +13,9 @@
 <link rel="stylesheet" href="css/seo-home.css?v=20261119-v2">
 <script src="js/main.js?v=20261119-share1" defer></script>
 <script src="js/footer.js?v=20261119-nav1" defer></script>
+<link rel="stylesheet" href="css/catch.css">
+<script src="js/catch-config.js" defer></script>
+<script src="js/catch-home.js" defer></script>
 <link rel="canonical" href="https://oosaka0123-sudo.github.io/wakayama-saika-club/">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ja_JP">
@@ -210,6 +213,16 @@
         <p class="note">橙色は高仕掛けを中心に釣る魚、黒色はその他の対象魚です。</p>
       </div>
     </div>
+  </div>
+</section>
+
+<section id="latest-catch" class="catch-body" aria-labelledby="catch-home-heading">
+  <div class="wrap">
+    <span class="sec-label">NEW / FISHING REPORT</span>
+    <h2 id="catch-home-heading">最新釣果</h2>
+    <p id="catch-home-status" role="status" aria-live="polite">釣果を読み込んでいます。</p>
+    <div id="catch-home-grid" class="catch-grid" aria-label="最新3件の釣果"></div>
+    <a class="btn" href="catch/">FISHING REPORT <span>釣果一覧を見る</span></a>
   </div>
 </section>
 

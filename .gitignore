@@ -1,0 +1,6 @@
+line-api/config.local.php
+line-api/data/state.json
+line-api/uploads/*.jpg
+line-api/uploads/*.jpeg
+line-api/uploads/*.png
+line-api/uploads/*.webp

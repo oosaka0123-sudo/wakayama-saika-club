@@ -122,7 +122,7 @@ footer[data-wsc-footer] .footer-about{font-size:13px;line-height:1.85;margin:0 0
 /* Site-wide footer text navigation: five genuine internal pages, compact on phones. */
 footer[data-wsc-footer] .footer-nav{margin:0 0 22px;padding:19px 0 0;border-top:1px solid rgba(255,255,255,.12)}
 footer[data-wsc-footer] .footer-nav-title{margin:0 0 14px;color:#ff9a3d;font:700 11px/1.5 Arial,'Noto Sans JP',sans-serif;letter-spacing:.16em}
-footer[data-wsc-footer] .footer-nav-list{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px 16px;margin:0;padding:0;list-style:none}
+footer[data-wsc-footer] .footer-nav-list{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px 16px;margin:0;padding:0;list-style:none}
 footer[data-wsc-footer] .footer-nav-list li{margin:0;padding:0;list-style:none}
 footer[data-wsc-footer] .footer-nav-list a{display:inline-block;padding:4px 0;color:#e5edf2;text-decoration:none;font-size:13px;line-height:1.6;text-underline-offset:4px}
 footer[data-wsc-footer] .footer-nav-list a:hover{color:#ff9a3d;text-decoration:underline}
