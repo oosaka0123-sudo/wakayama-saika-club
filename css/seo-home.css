@@ -28,3 +28,9 @@
     margin-bottom: 8px;
   }
 }
+
+/* Match the original 47px English display at very narrow mobile widths. */
+@media(max-width:359px) {
+  .hero .hero-en-display { font-size: 47px; }
+  .hero h1.hero-jp { font-size: 18px; letter-spacing: 0; }
+}
