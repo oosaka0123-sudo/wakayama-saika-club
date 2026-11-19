@@ -10,6 +10,80 @@
     document.querySelectorAll('[data-people]').forEach(function (el) { el.remove(); });
   }
 
+  // Small, icon-only share control shared across all WSC page headers.
+  (function initWscShare() {
+    var bar = document.querySelector('.site-header .in');
+    if (!bar || bar.querySelector('.wsc-share-btn')) return;
+
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'wsc-share-btn';
+    button.setAttribute('aria-label', 'このページを共有');
+    button.innerHTML =
+      '<svg class="wsc-share-symbol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+        '<circle cx="18" cy="5" r="2.2"/><circle cx="6" cy="12" r="2.2"/><circle cx="18" cy="19" r="2.2"/>' +
+        '<path d="m8.1 10.8 7.8-4.6M8.1 13.2l7.8 4.6"/>' +
+      '</svg>' +
+      '<svg class="wsc-share-copied" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+        '<path d="m5 12.4 4.5 4.5L19 7.5"/>' +
+      '</svg>';
+
+    var status = document.createElement('span');
+    status.className = 'wsc-share-sr';
+    status.setAttribute('role', 'status');
+    bar.appendChild(status);
+    var menu = bar.querySelector('.menu-btn');
+    if (menu) bar.insertBefore(button, menu);
+    else bar.appendChild(button);
+
+    var resetTimer = null;
+    function copied() {
+      button.classList.add('is-copied');
+      button.setAttribute('aria-label', 'リンクをコピーしました');
+      status.textContent = 'リンクをコピーしました';
+      if (resetTimer) clearTimeout(resetTimer);
+      resetTimer = setTimeout(function () {
+        button.classList.remove('is-copied');
+        button.setAttribute('aria-label', 'このページを共有');
+        status.textContent = '';
+      }, 2000);
+    }
+    async function copyUrl(url) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(url);
+        return true;
+      }
+      var input = document.createElement('textarea');
+      input.value = url;
+      input.style.position = 'fixed';
+      input.style.opacity = '0';
+      document.body.appendChild(input);
+      input.select();
+      var ok = false;
+      try { ok = document.execCommand('copy'); } finally { input.remove(); }
+      return ok;
+    }
+    button.addEventListener('click', async function () {
+      var canonical = document.querySelector('link[rel="canonical"]');
+      var url = (canonical && canonical.href) || (location.origin + location.pathname);
+      if (typeof navigator.share === 'function') {
+        try {
+          await navigator.share({title: document.title, url: url});
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+          // Unsupported share context: fall back to copying the same clean URL.
+        }
+      }
+      try {
+        if (await copyUrl(url)) copied();
+        else status.textContent = 'リンクのコピーに対応していません';
+      } catch (err) {
+        status.textContent = 'リンクのコピーに対応していません';
+      }
+    });
+  })();
+
   // ---- mobile menu ----
   var btn = document.getElementById('menu-btn');
   var drawer = document.getElementById('drawer');
