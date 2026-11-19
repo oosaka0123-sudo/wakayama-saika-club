@@ -24,19 +24,38 @@ try {
         $source = $event['source'] ?? [];
         $user = is_array($source) ? (string)($source['userId'] ?? '') : '';
         if ($user === '' || $id === '' || strlen($id)>128 || wsc_event_seen($id)) continue;
+        $message = $event['message'] ?? [];
+        $kind = is_array($message) ? (string)($message['type'] ?? '') : '';
         $members = $config['allowed_user_ids'] ?? [];
-        if (!is_array($members) || !in_array($user, $members, true)) {
-            // Collect friend additions privately for one-time member enrollment.
-            if (($event['type'] ?? '') === 'follow') {
-                wsc_state(function (array &$state) use ($user, $id) {
-                    $state['candidates'][$user] = date(DATE_ATOM);
+        $legacyAllowed = is_array($members) && in_array($user, $members, true);
+        $registered = wsc_state(function (array &$state) use ($user) {
+            return !empty($state['allowed'][$user]);
+        });
+        if (!$legacyAllowed && !$registered) {
+            // A friend addition or voluntary "登録：名前" creates a PRIVATE request,
+            // not a public report. The administrator authorizes the member once.
+            $eventType = (string)($event['type'] ?? '');
+            $nickname = '';
+            if ($eventType === 'message' && $kind === 'text') {
+                $text = trim((string)($message['text'] ?? ''));
+                if (preg_match('/^登録\s*[:：]\s*(.{1,40})$/u', $text, $matches)) {
+                    $nickname = mb_substr(trim($matches[1]), 0, 40);
+                }
+            }
+            if ($eventType === 'follow' || $nickname !== '') {
+                wsc_state(function (array &$state) use ($user, $id, $nickname) {
+                    if (isset($state['seen'][$id])) return;
+                    $existing = $state['candidates'][$user] ?? [];
+                    $previous = is_array($existing) ? (string)($existing['name'] ?? '') : '';
+                    $state['candidates'][$user] = [
+                        'name'=>$nickname !== '' ? $nickname : $previous,
+                        'seen_at'=>date(DATE_ATOM)
+                    ];
                     wsc_mark_seen($state, $id);
                 });
             }
             continue;
         }
-        $message = $event['message'] ?? [];
-        $kind = is_array($message) ? (string)($message['type'] ?? '') : '';
         if (($event['type'] ?? '') !== 'message') continue;
         if ($kind === 'text') {
             $parts = wsc_text_parts((string)($message['text'] ?? ''));
@@ -74,11 +93,12 @@ try {
         curl_close($curl);
         if (!is_string($bytes) || $code !== 200 || strlen($bytes)>10*1024*1024 || strlen($bytes)<128) continue;
         $mime = (new finfo(FILEINFO_MIME_TYPE))->buffer($bytes);
-        $extensions = ['image/jpeg'=>'jpg', 'image/png'=>'png', 'image/webp'=>'webp'];
-        if (!isset($extensions[$mime])) continue;
-        $name = bin2hex(random_bytes(12)).'.'.$extensions[$mime];
+        if (!in_array($mime, ['image/jpeg','image/png','image/webp'], true)) continue;
+        $clean = wsc_public_photo($bytes);
+        if ($clean === null) continue; // Reject if re-encoding fails: never expose unfiltered metadata.
+        $name = bin2hex(random_bytes(12)).'.jpg';
         $filepath = __DIR__.'/uploads/'.$name;
-        if (file_put_contents($filepath, $bytes, LOCK_EX) !== strlen($bytes)) continue;
+        if (file_put_contents($filepath, $clean, LOCK_EX) !== strlen($clean)) continue;
         chmod($filepath, 0644);
         $stored = wsc_state(function (array &$state) use ($id, $user, $name) {
             if (isset($state['seen'][$id])) return false;

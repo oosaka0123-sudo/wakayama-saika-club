@@ -55,6 +55,40 @@ function wsc_mark_seen(array &$state, string $id): void {
         $state['seen'] = array_slice($state['seen'], -1000, null, true);
     }
 }
+/**
+ * Re-encode a LINE photo to a fresh JPEG. Drops GPS/EXIF metadata and
+ * enforces sane image dimensions before writing anything publicly.
+ * Requires PHP GD (supported by the host, verified again on deployment).
+ */
+function wsc_public_photo(string $bytes): ?string {
+    if (!function_exists('imagecreatefromstring') || !function_exists('imagejpeg')) return null;
+    $size = @getimagesizefromstring($bytes);
+    if (!is_array($size) || count($size) < 2) return null;
+    $w = (int)$size[0];
+    $h = (int)$size[1];
+    if ($w < 64 || $h < 64 || $w > 7000 || $h > 7000 || $w * $h > 20000000) return null;
+    $image = @imagecreatefromstring($bytes);
+    if (!($image instanceof GdImage)) return null;
+    $scale = min(1.0, 1920 / max($w, $h));
+    $targetW = max(1, (int)round($w * $scale));
+    $targetH = max(1, (int)round($h * $scale));
+    $target = imagecreatetruecolor($targetW, $targetH);
+    if (!$target) { imagedestroy($image); return null; }
+    $white = imagecolorallocate($target, 255, 255, 255);
+    imagefill($target, 0, 0, $white);
+    if (!imagecopyresampled($target, $image, 0, 0, 0, 0, $targetW, $targetH, $w, $h)) {
+        imagedestroy($target);
+        imagedestroy($image);
+        return null;
+    }
+    ob_start();
+    $ok = imagejpeg($target, null, 82);
+    $data = ob_get_clean();
+    imagedestroy($target);
+    imagedestroy($image);
+    return $ok && is_string($data) && strlen($data) > 128 ? $data : null;
+}
+
 function wsc_text_parts(string $text): array {
     $text = trim(str_replace(["\r\n", "\r"], "\n", $text));
     $author = '';

@@ -1,43 +1,55 @@
-# WSC 釣果LINE 自動連携 — ロリポップ設置準備
+# 和歌山雑賀クラブ「釣果情報」LINE連携 — 配備手順と安全設計
 
-## 変更範囲と未実施事項
-- このフォルダは和歌山雑賀クラブ公開GitHub Pagesのコピー。複製側だけ新機能を追加している。
-- 既存の chat.rss7.net、rss7.net、kansai.rss7.net とDNSやWebルートを変更しない。
-- 現状は **PC04上のステージングのみ**。ロリポップへのアップロードとLINE実接続はまだ。
-- 2つのサイトで検索競合しないよう、複製HTMLは noindex としている。公式GitHub Pagesは変更なし。
-- GitHub PagesとロリポップのURLは同じにはならない。公開後は既存GitHub Pages側で報告一覧を表示する場合、JSからロリポップの読み取りAPIを呼ぶ。
+## 現在地（2026-11-19）
+- 最新公式サイト main をコピーした **独立したPC04作業ブランチ**。
+- GitHub Pages本番、チャットホーム、rss7.net、DNSは変更しない。
+- 釣果ページのタイトル / H1 は「釣果情報」。
+- LINE公式アカウント未開設、ロリポップ公開先未確定。外部本番接続は行っていない。
+- PR #17 は Draft。正式な配備までmainへマージしない。
 
-## 構成
-- catch/index.html … 釣果一覧画面（同じヘッダー、メニュー、フッター）
-- index.html … 最新釣果3件と「釣果一覧を見る」
-- js/catch*.js … 受信APIの読み込み。危険な投稿HTMLを実行しない。
-- line-api/feed.php … 公開写真と任意テキストのJSON配信
-- line-api/webhook.php … LINE署名検証、会員限定受信、LINE画像取得、投稿保存
-- line-api/delete.php … 管理者トークン認証で誤投稿の削除
-- line-api/data/ … Webhook履歴と投稿者IDの非公開記録
-- line-api/uploads/ … 拡張子/MIME制限した画像のみ
+## 2つのURLを扱うルール
+- クラブの公式閲覧先は従来の GitHub Pages URL のまま。
+- ロリポップのコピーは別URL（アドレス欄では同じドメインにできない）。
+- ロリポップ側コピーの HTTP Header `X-Robots-Tag: noindex, nofollow` はルートの .htaccess で配信する。ロリポップ公開後はヘッダーが正しく出ることを必ず確認する。
+- 公式GitHub Pages の既存5ページの `index,follow` とcanonicalはそのまま維持し、重複サイトによるSEO事故を避ける。
+- ロリポップ側で投稿した写真は `line-api/feed.php` のJSONを通じて、将来はGitHub Pagesでも表示できる（公開HTTPS URL確定後に設定）。
 
-## LINE送信方法
-- 会員が釣果写真を送信すると、即時（サーバー処理後）自動掲載。投稿ごとの管理者承認なし。
-- コメントと投稿者名は省略可能。
-- 写真の前後15分以内に、同じLINEから次のテキストを送ると最新写真の情報を更新する。
-  - コメント: 良型のマダイが釣れました
-  - 投稿者: 山田
-- 一行の自由文だけならコメントとして扱い、LINE登録名を無断公開しない。
-- 複数写真は1枚ごとに別投稿として扱う（アルバム合成は未対応）。
+## ディレクトリ構成
+- `catch/index.html` 釣果情報ページ
+- `index.html` 最新釣果3件（コピー側のみ）
+- `css/catch.css` + `js/catch.js` + `js/catch-home.js` 表示処理
+- `line-api/webhook.php` LINEの署名検証・会員限定画像受信
+- `line-api/lib.php` 排他制御つき保存処理・画像の再エンコード（EXIF/GPSを除去）
+- `line-api/feed.php` 公開写真と任意テキストを返す読み取りAPI
+- `line-api/admin/index.php` 管理キーでログイン、会員初期登録/解除と誤投稿削除
+- `line-api/delete.php` 管理用POST API（代替手段）
+- `line-api/config.sample.php` 設定例、`config.local.php` はGit管理対象外
+- `line-api/data/` 個人識別子と投稿データ。HTTPアクセス遮断
+- `line-api/uploads/` 再生成したJPEG写真。PHP等の実行を禁止
 
-## 本番接続で必要な操作
-1. LINE公式アカウントを新規作成し、Messaging APIチャネルを設定する。
-2. ロリポップの **独立した新規公開先** と有効なHTTPS URLを確認する。既存ドメインのサイトファイルは上書きしない。
-3. 受信サーバーにロリポップのPHPを有効化し、\`line-api/data/\` と \ `line-api/uploads/\` の書き込み権限を確認する。
-4. server上に\`line-api/config.local.php\` を \ `config.sample.php\` から作り、チャネルシークレット・アクセストークン・公開APIのHTTPS URL・管理者トークンを設定する。**GitHubやチャットに秘密情報を貼らない。**
-5. 会員のLINE User IDは友だち追加Webhookで非公開データに候補として記録できる。本人確認したIDのみ\`allowed_user_ids\`へ設定する。投稿ごとの承認は不要。
-6. LINE Developersに\`https://<separate-domain-or-path>/line-api/webhook.php\`をWebhookとして設定し、検証送信を行う。
-7. 専用LINEから実際に画像送信 → feed.phpの表示 → トップ3件 / catch/全件表示 → 削除テスト → スマホ表示を確認する。
-8. 必要なら公式GitHub Pages側に catch/ の静的画面とJSを移し、\`js/catch-config.js\` にロリポップのHTTPS feed URLだけを設定。秘密情報はJSに置かない。
+## 投稿者が使う手順
+1. 専用LINE公式アカウントを友だち追加し、初回だけ `登録：山田` のように送る。
+2. 管理者が **最初の会員登録のみ** 確認・許可（投稿ごとの承認は不要）。
+3. 釣果写真を送るだけで公開。投稿者名やコメントは省略可。
+4. 追加したい場合は写真の前後15分以内に、同じトークで次のテキストを送る。
+   - `コメント：良型マダイが釣れました`
+   - `投稿者：山田`
+5. 写真を複数送った場合は1枚ずつ別投稿となる。まとめアルバム表示は未実装。
+6. 写真とコメントは **インターネットで誰でも閲覧可能**。事前に投稿者の周知と同意が必要。
+
+## 本番接続手順
+1. LINE公式アカウントを新規開設し、LINE Official Account ManagerでMessaging APIを有効化。
+2. ロリポップの既存サイト・既存ドメインの公開フォルダを調査。**既存ファイルを上書きせず**、専用のHTTPS公開先と隔離フォルダを用意する。
+3. PHP8.3以上、cURL/mbstring/fileinfo/GD、HTTP HTTPSと .htaccess の可否を確認。
+4. 配備ディレクトリの `data/` と `uploads/` が書き込め、Webから `data/state.json` と `config.local.php` が読めないことを確認。
+5. ロリポップ側だけ `config.sample.php` のコピー `config.local.php` を作り、LINEチャネルシークレット・アクセストークン・管理者キー（32文字以上）・`public_base_url` を登録。**秘密情報をGitHubにpush/チャットに貼らない。**
+6. LINE管理画面のWebhook URLへ `https://(独立のホストまたはサブディレクトリ)/line-api/webhook.php` を指定し検証。
+7. 管理画面 `line-api/admin/` へHTTPSでログインし、友だち追加した会員を初回認証。
+8. 実際にLINEへ写真送信 → 投稿表示 → EXIFがないこと → 取り消し → 非会員からの拒否 → スマホ表示を実機テスト。
+9. API URLが確定後、公式GitHub Pagesから `feed.php` を読み込む場合、`js/catch-config.js` に **公開URLのみ** を設定して別PRとしてレビューし本番公開。
 
 ## 注意
-- 公式LINEでの送受信条件、LINEによる署名検証、CORS（GitHub Pages起点）、写真の掲載同意が必要。
-- LINEアカウントやロリポップ受信用URLが未確定のため、現段階では実際の自動掲載は動作しない。
-- ロリポップのPHP設定とCORS/WAFの実機動作は公開後に確認する。
-- 管理者削除は保護されたPOST APIで可能。操作UIは後続で設置する。
+- Noindexが正しく返ることをロリポップ側のHTTPレスポンスヘッダーで確認するまで、コピーを一般公開しない。
+- 本番のフォーム・DB・ログ・アップロードができていない状態で動作確認済みと宣言しない。
+- 投稿ごとの管理者承認なし。初回の本人確認と誤投稿削除のみ管理操作。
+- 予備の失敗時リトライ、画像容量制限、迷惑投稿のレート制限は本番負荷に応じて追加。
