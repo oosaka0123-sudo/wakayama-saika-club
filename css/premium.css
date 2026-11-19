@@ -119,6 +119,15 @@ footer[data-wsc-footer] .brand img{width:60px;height:37px;max-width:60px;flex:0 
 footer[data-wsc-footer] .brand small{display:block;font:700 8px/1.5 Arial,sans-serif;letter-spacing:.12em}
 footer[data-wsc-footer] .brand span{font-size:15px;line-height:1.25}
 footer[data-wsc-footer] .footer-about{font-size:13px;line-height:1.85;margin:0 0 18px}
+/* Site-wide footer text navigation: five genuine internal pages, compact on phones. */
+footer[data-wsc-footer] .footer-nav{margin:0 0 22px;padding:19px 0 0;border-top:1px solid rgba(255,255,255,.12)}
+footer[data-wsc-footer] .footer-nav-title{margin:0 0 14px;color:#ff9a3d;font:700 11px/1.5 Arial,'Noto Sans JP',sans-serif;letter-spacing:.16em}
+footer[data-wsc-footer] .footer-nav-list{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px 16px;margin:0;padding:0;list-style:none}
+footer[data-wsc-footer] .footer-nav-list li{margin:0;padding:0;list-style:none}
+footer[data-wsc-footer] .footer-nav-list a{display:inline-block;padding:4px 0;color:#e5edf2;text-decoration:none;font-size:13px;line-height:1.6;text-underline-offset:4px}
+footer[data-wsc-footer] .footer-nav-list a:hover{color:#ff9a3d;text-decoration:underline}
+footer[data-wsc-footer] .footer-nav-list a:focus-visible{color:#ff9a3d;outline:2px solid #ff9a3d;outline-offset:4px}
+@media(max-width:680px){footer[data-wsc-footer] .footer-nav-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px}}
 footer[data-wsc-footer] .copyright{font-size:10px;letter-spacing:.1em;margin:0}
 footer[data-wsc-footer] .powered-by{margin:17px 0 0;padding:11px 0 0}
 @media(max-width:380px){footer[data-wsc-footer] .brand small{display:block}footer[data-wsc-footer] .brand span{font-size:14px}}
