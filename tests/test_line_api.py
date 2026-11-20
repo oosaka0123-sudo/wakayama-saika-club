@@ -222,6 +222,20 @@ try:
     check(anon == 404, "送信前の写真はURL直打ちでも見えない")
     starts = [ts for _, ts in replies() if any("続けて写真" in t for t in ts)]
     check(len(starts) == 2, "下書き開始の案内は1人1回だけ")
+    followups = [ts for _, ts in replies() if any("追加しました。送り終わったら" in t for t in ts)]
+    check(len(followups) == 2, "写真を追加するたび送信ボタンを再案内")
+    quick_reply_count = 0
+    with open(httplog, encoding="utf-8") as logfile:
+        for line in logfile:
+            d = json.loads(line)
+            if d["u"].endswith("/message/reply"):
+                payload = json.loads(d["b"])
+                if any(any(
+                    item.get("action", {}).get("label") == "送信する"
+                    for item in msg.get("quickReply", {}).get("items", [])
+                ) for msg in payload["messages"]):
+                    quick_reply_count += 1
+    check(quick_reply_count >= 4, "最初と追加写真の各返信に送信するボタンが付く")
 
     webhook([ev(UA, "text", text="送信")])
     webhook([ev(UA, "text", text="送信")])
