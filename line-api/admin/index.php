@@ -21,7 +21,7 @@ function wsc_redirect(string $query = '', string $flash = ''): void
     exit;
 }
 
-$labels = ['pending' => '承認待ち', 'published' => '掲載中', 'rejected' => '非公開', 'draft' => '送信前'];
+$labels = ['published' => '掲載中', 'pending' => '承認待ち', 'rejected' => '非公開', 'draft' => '送信前'];
 
 // ---- POST 処理 ----
 if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
@@ -34,6 +34,29 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     if (!wsc_admin_logged_in()) wsc_redirect('', 'ログインしてください。');
     if (!wsc_csrf_ok()) wsc_redirect('', '画面の有効期限が切れました。もう一度操作してください。');
     if ($action === 'logout') { wsc_logout(); header('Location: ' . $self, true, 303); exit; }
+
+    if ($action === 'set_passphrase') {
+        $p1 = (string)($_POST['passphrase'] ?? '');
+        if (mb_strlen(trim($p1)) < 4 || preg_match('/\s/u', trim($p1))) wsc_redirect('tab=settings', '合言葉は空白なしの4文字以上にしてください。');
+        wsc_state(function (array &$s) use ($p1) { $s['settings']['passphrase_hash'] = password_hash(wsc_normalize_passphrase($p1), PASSWORD_DEFAULT); $s['settings']['passphrase_updated'] = wsc_now(); });
+        wsc_redirect('tab=settings', '合言葉を設定しました。会員に案内してください（登録済みの会員はそのまま投稿できます）。');
+    }
+    if ($action === 'auto_publish') {
+        $on = ($_POST['value'] ?? '') === '1';
+        wsc_state(function (array &$s) use ($on) { $s['settings']['auto_publish'] = $on; });
+        wsc_redirect('tab=settings', $on ? '自動掲載を再開しました。' : '自動掲載を停止しました。以後の投稿は「承認待ち」に入ります。');
+    }
+    if ($action === 'member_block' || $action === 'member_unblock' || $action === 'member_name') {
+        $key = (string)($_POST['key'] ?? '');
+        if (!preg_match('/^[a-f0-9]{24}$/', $key)) wsc_redirect('tab=members', '会員が見つかりません。');
+        $ok = wsc_state(function (array &$s) use ($key, $action) {
+            if (!isset($s['members'][$key])) return false;
+            if ($action === 'member_name') $s['members'][$key]['name'] = wsc_clip((string)($_POST['name'] ?? ''), 30);
+            else $s['members'][$key]['blocked'] = $action === 'member_block';
+            return true;
+        });
+        wsc_redirect('tab=members', !$ok ? '会員が見つかりません。' : ['member_block' => '投稿を停止しました。', 'member_unblock' => '投稿を再開しました。', 'member_name' => '名前を保存しました。'][$action]);
+    }
 
     $id = (string)($_POST['id'] ?? '');
     if (!wsc_valid_id($id)) wsc_redirect('', '投稿が見つかりません。');
@@ -104,7 +127,7 @@ if (!$logged) {
 
 // 放置下書きの自動確定（通知はプッシュ）
 $notify = wsc_state(function (array &$s) { return wsc_sweep_idle_drafts($s); });
-foreach ($notify as $to) wsc_push($to, wsc_msg_received());
+wsc_notify_submitted($notify);
 
 $state = wsc_read_state();
 $base = wsc_base_url();
@@ -160,14 +183,46 @@ if ($id !== '' && wsc_valid_id($id) && isset($state['posts'][$id])) {
     exit;
 }
 
-$tab = (string)($_GET['tab'] ?? 'pending');
-if (!isset($labels[$tab])) $tab = 'pending';
+$tab = (string)($_GET['tab'] ?? 'published');
+if (!isset($labels[$tab]) && !in_array($tab, ['members', 'settings'], true)) $tab = 'published';
 $counts = array_fill_keys(array_keys($labels), 0);
 foreach ($state['posts'] as $p) if (isset($counts[$p['status'] ?? ''])) $counts[$p['status']]++;
+$autoOn = (bool)wsc_setting($state, 'auto_publish', true);
+$passSet = wsc_passphrase_set($state);
 echo '<nav class="tabs" aria-label="状態">';
-foreach ($labels as $k => $l) echo '<a class="' . ($k === $tab ? 'on' : '') . '" href="?tab=' . $k . '">' . wsc_h($l) . '（' . $counts[$k] . '）</a>';
+foreach (['published', 'pending', 'rejected', 'draft'] as $k) echo '<a class="' . ($k === $tab ? 'on' : '') . '" href="?tab=' . $k . '">' . wsc_h($labels[$k]) . '（' . $counts[$k] . '）</a>';
+echo '<a class="' . ($tab === 'members' ? 'on' : '') . '" href="?tab=members">会員（' . count($state['members']) . '）</a>';
+echo '<a class="' . ($tab === 'settings' ? 'on' : '') . '" href="?tab=settings">設定</a>';
 echo '</nav>';
-if ($tab === 'draft') echo '<p class="muted">「送信」を押す前の投稿です。最後の操作から1時間たつと自動で「承認待ち」に移ります。</p>';
+if (!$passSet) echo '<p class="flash">合言葉が未設定のため、まだ誰も会員登録・投稿できません。「設定」タブで合言葉を決めてください。</p>';
+if (!$autoOn) echo '<p class="flash">自動掲載を停止中です。新しい投稿は「承認待ち」に入ります。</p>';
+if ($tab === 'settings') {
+    echo '<form class="edit" method="post"><h2 style="margin-top:0">会員登録の合言葉</h2><p>LINEで「登録 合言葉」と送った人だけが投稿できます。' . ($passSet ? '現在：<b>設定済み</b>（' . wsc_h(date('Y年n月j日', strtotime((string)wsc_setting($state, 'passphrase_updated', 'now')))) . '）' : '現在：<b>未設定</b>') . '</p>';
+    echo '<input type="hidden" name="csrf" value="' . wsc_h($csrf) . '"><input type="hidden" name="action" value="set_passphrase">';
+    echo '<div class="field"><label for="pp">新しい合言葉（空白なし・4文字以上）</label><input type="text" id="pp" name="passphrase" autocomplete="off" required></div>';
+    echo '<p class="muted">合言葉を変えても、登録済みの会員はそのまま投稿できます。外部に漏れたときは変更し、不審な会員は「会員」タブで停止してください。</p><div class="btns"><button class="primary" type="submit">合言葉を保存</button></div></form>';
+    echo '<form class="edit" method="post"><h2 style="margin-top:0">自動掲載</h2><p>現在：<b>' . ($autoOn ? 'ON（「送信」ですぐ掲載）' : 'OFF（承認待ちに入る）') . '</b></p>';
+    echo '<input type="hidden" name="csrf" value="' . wsc_h($csrf) . '"><input type="hidden" name="action" value="auto_publish"><input type="hidden" name="value" value="' . ($autoOn ? '0' : '1') . '">';
+    echo '<p class="muted">荒らし投稿が続くときはOFFにすると、新しい投稿はすべて承認待ちになります。1日' . WSC_SITE_DAILY_PUBLISH . '件を超えた分も自動で承認待ちになります。</p>';
+    echo '<div class="btns"><button class="' . ($autoOn ? 'danger' : 'primary') . '" type="submit">' . ($autoOn ? '自動掲載を停止する' : '自動掲載を再開する') . '</button></div></form></main></body></html>';
+    exit;
+}
+if ($tab === 'members') {
+    echo '<p class="muted">LINEで合言葉を送って登録した人の一覧です。LINEの表示名やIDは保存していません（識別番号のみ）。</p>';
+    if (!$state['members']) echo '<p>登録済みの会員はいません。</p>';
+    $postCount = [];
+    foreach ($state['posts'] as $p) { $k = (string)($p['user_key'] ?? ''); $postCount[$k] = ($postCount[$k] ?? 0) + 1; }
+    echo '<div class="list">';
+    foreach ($state['members'] as $key => $m) {
+        echo '<div class="item"><div><p><b>' . wsc_h((string)($m['name'] ?? '') !== '' ? (string)$m['name'] : '（名前なし）') . '</b> <span class="badge ' . (!empty($m['blocked']) ? 'rejected' : 'published') . '">' . (!empty($m['blocked']) ? '停止中' : '投稿可') . '</span></p>';
+        echo '<p class="muted">番号 ' . wsc_h(substr((string)$key, 0, 6)) . '・登録 ' . wsc_h(date('Y/n/j', strtotime((string)$m['registered_at']))) . '・投稿 ' . (int)($postCount[$key] ?? 0) . '件</p>';
+        echo '<form method="post" style="display:flex;gap:6px;margin-top:6px"><input type="hidden" name="csrf" value="' . wsc_h($csrf) . '"><input type="hidden" name="key" value="' . wsc_h((string)$key) . '"><input type="hidden" name="action" value="member_name"><input type="text" name="name" value="' . wsc_h((string)($m['name'] ?? '')) . '" placeholder="管理用メモ（例：山田さん）" maxlength="30" style="flex:1;padding:8px;border:1px solid #b9c5cc"><button type="submit">保存</button></form>';
+        echo '<form method="post" style="margin-top:6px"><input type="hidden" name="csrf" value="' . wsc_h($csrf) . '"><input type="hidden" name="key" value="' . wsc_h((string)$key) . '"><input type="hidden" name="action" value="' . (!empty($m['blocked']) ? 'member_unblock' : 'member_block') . '"><button type="submit" class="' . (!empty($m['blocked']) ? '' : 'danger') . '">' . (!empty($m['blocked']) ? '投稿を再開' : '投稿を停止') . '</button></form></div></div>';
+    }
+    echo '</div></main></body></html>';
+    exit;
+}
+if ($tab === 'draft') echo '<p class="muted">「送信」を押す前の投稿です。最後の操作から1時間たつと自動で確定（掲載）されます。</p>';
 $items = array_filter($state['posts'], function ($p) use ($tab) { return ($p['status'] ?? '') === $tab; });
 uasort($items, function ($a, $b) { return strcmp((string)($b['submitted_at'] ?? $b['created_at']), (string)($a['submitted_at'] ?? $a['created_at'])); });
 if (!$items) echo '<p>' . wsc_h($labels[$tab]) . 'の投稿はありません。</p>';

@@ -9,7 +9,10 @@ if (!defined('WSC_APP')) { http_response_code(403); exit; }
 const WSC_STATUSES = ['draft', 'pending', 'published', 'rejected'];
 const WSC_MAX_PHOTOS = 5;
 const WSC_DRAFT_IDLE_SECONDS = 3600;      // 送信忘れの下書きは1時間後に自動で「承認待ち」へ
-const WSC_DAILY_SUBMIT_LIMIT = 10;
+const WSC_DAILY_SUBMIT_LIMIT = 10;      // 1人あたり1日の投稿上限
+const WSC_EVENTS_PER_MINUTE = 20;       // 1人あたり1分間の操作上限（連打・荒らし対策）
+const WSC_SITE_DAILY_PUBLISH = 50;      // サイト全体の1日の自動掲載上限（超えた分は承認待ち）
+const WSC_REG_FAIL_LIMIT = 5;           // 合言葉の失敗は1人1日5回まで
 
 /**
  * 非公開領域（設定・投稿データ・写真）。
@@ -103,7 +106,8 @@ function wsc_json(int $status, array $payload, array $extraHeaders = []): void
 
 function wsc_empty_state(): array
 {
-    return ['version' => 1, 'posts' => [], 'drafts' => [], 'seen' => [], 'submits' => [], 'token' => []];
+    return ['version' => 2, 'posts' => [], 'drafts' => [], 'seen' => [], 'submits' => [], 'token' => [],
+            'members' => [], 'settings' => [], 'rate' => [], 'regfail' => [], 'daily' => []];
 }
 
 /**

@@ -5,6 +5,7 @@ if (!defined('WSC_APP')) { http_response_code(403); exit; }
 
 const WSC_CMD_SUBMIT = ['送信', '送信する', '完了', '投稿', '投稿する', 'おわり', '終わり', '以上'];
 const WSC_CMD_CANCEL = ['取消', '取り消し', '取り消す', 'キャンセル', 'やり直し', 'やめる'];
+const WSC_SITE_CATCH_URL = 'https://oosaka0123-sudo.github.io/wakayama-saika-club/catch/';
 const WSC_CMD_HELP = ['使い方', 'ヘルプ', 'help', '？', '?'];
 
 function wsc_quick_submit(): array { return ['送信する' => '送信', '取り消す' => '取消']; }
@@ -14,10 +15,9 @@ function wsc_msg_welcome(): array
     return [wsc_text_message(
         "和歌山雑賀クラブ 釣果投稿LINEへようこそ！\n\n" .
         "こちらはクラブ会員の釣果投稿専用アカウントです。\n\n" .
-        "釣果写真とコメントをお送りください。\n\n" .
-        "投稿者名は任意です。\n\n" .
-        "送信された内容は管理者が確認し、承認後にホームページへ掲載します。\n\n" .
-        "【送り方】写真（5枚まで）とコメントを送ったら、最後に「送信」と送ってください。"
+        "【はじめに（1回だけ）】\nクラブから案内された合言葉を\n「登録 合言葉」\nの形で送ってください。\n\n" .
+        "【送り方】\n釣果写真（1〜5枚）とコメントを送り、最後に「送信」と送ってください。投稿者名は任意です。\n\n" .
+        "送信すると、ホームページの「釣果情報」に掲載されます。"
     )];
 }
 
@@ -28,8 +28,8 @@ function wsc_msg_help(): array
         "① 写真を送る（1〜5枚）\n" .
         "② 必要ならコメントを送る（例）\n" .
         "11月20日\nマダイ 3匹\n今日は朝からよく釣れました！\n投稿者：山田\n" .
-        "③ 最後に「送信」と送る\n\n" .
-        "※ 投稿者名・魚種・日付は省略できます。\n※ やり直すときは「取消」と送ってください。",
+        "③ 最後に「送信」と送る → ホームページに掲載\n\n" .
+        "※ 投稿者名・魚種・日付は省略できます。\n※ 送信前にやり直すときは「取消」と送ってください。\n※ 初めての方は「登録 合言葉」で会員登録してください。",
         wsc_quick_submit()
     )];
 }
@@ -37,16 +37,61 @@ function wsc_msg_help(): array
 function wsc_msg_draft_started(): array
 {
     return [wsc_text_message(
-        "受け取りました。続けて写真（5枚まで）やコメントを送れます。\n送り終わったら「送信する」を押してください。",
+        "受け取りました。続けて写真（5枚まで）やコメントを送れます。\n送り終わったら「送信する」を押してください。ホームページに掲載されます。",
         wsc_quick_submit()
     )];
 }
 
-function wsc_msg_received(): array
+function wsc_msg_published(): array
+{
+    return [wsc_text_message(
+        "釣果情報をホームページに掲載しました。\n" . WSC_SITE_CATCH_URL . "\n\nご投稿ありがとうございます！\n内容の訂正・削除は管理者にご連絡ください。"
+    )];
+}
+
+/** 自動掲載を停止中・上限超過などで承認待ちになったとき。 */
+function wsc_msg_received_pending(): array
 {
     return [wsc_text_message(
         "釣果情報を受け付けました。\n\n管理者の確認後、ホームページの『釣果情報』に掲載します。\n\nご投稿ありがとうございます！"
     )];
+}
+
+function wsc_msg_need_registration(): array
+{
+    return [wsc_text_message(
+        "投稿するには、最初に会員登録が必要です（1回だけ）。\nクラブから案内された合言葉を\n「登録 合言葉」\nの形で送ってください。\n\n※登録前に送った写真・文章は保存していません。"
+    )];
+}
+
+function wsc_msg_registered(): array
+{
+    return [wsc_text_message(
+        "会員登録が完了しました。\n釣果写真（1〜5枚）とコメントを送り、最後に「送信」と送ってください。",
+        wsc_quick_submit()
+    )];
+}
+
+function wsc_msg_wrong_passphrase(bool $locked): array
+{
+    return [wsc_text_message($locked
+        ? '合言葉の入力に続けて失敗したため、本日は登録できません。クラブの管理者にお問い合わせください。'
+        : '合言葉が違います。クラブから案内された合言葉をご確認ください。')];
+}
+
+function wsc_msg_registration_closed(): array
+{
+    return [wsc_text_message('現在、会員登録の受付を準備中です。クラブの管理者にお問い合わせください。')];
+}
+
+function wsc_msg_blocked(): array
+{
+    return [wsc_text_message('現在このアカウントからの投稿は停止されています。クラブの管理者にお問い合わせください。')];
+}
+
+function wsc_msg_too_fast(): array
+{
+    return [wsc_text_message('短時間に多くの操作があったため、しばらく受付を停止しています。少し時間をおいてから送ってください。')];
 }
 
 function wsc_msg_nothing_to_submit(): array

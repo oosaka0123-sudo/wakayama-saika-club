@@ -51,6 +51,11 @@ function wsc_is_command(string $text, array $commands): bool
     return in_array($t, $commands, true);
 }
 
+function wsc_msg_for(array $post): array
+{
+    return ($post['status'] ?? '') === 'published' ? wsc_msg_published() : wsc_msg_received_pending();
+}
+
 function wsc_handle_event(array $event): void
 {
     $eventId = (string)($event['webhookEventId'] ?? '');
@@ -60,17 +65,18 @@ function wsc_handle_event(array $event): void
     $lineUser = (string)($source['userId'] ?? '');
     if (!preg_match('/^U[0-9a-f]{32}$/', $lineUser)) return;
     $userKey = wsc_user_key($lineUser);
-    $replyToken = (string)($event['replyToken'] ?? '');
     $type = (string)($event['type'] ?? '');
     $message = is_array($event['message'] ?? null) ? $event['message'] : [];
     $kind = (string)($message['type'] ?? '');
 
-    $alreadySeen = wsc_state(function (array &$s) use ($eventId) { return isset($s['seen'][$eventId]); }, false);
-    if ($alreadySeen) return;
+    $pre = wsc_state(function (array &$s) use ($eventId, $userKey) {
+        return ['seen' => isset($s['seen'][$eventId]), 'member' => wsc_is_member($s, $userKey)];
+    }, false);
+    if ($pre['seen']) return;
 
-    // 画像はロックの外で取得・保存（時間がかかるため）
+    // 画像は会員のときだけ、ロックの外で取得・保存（会員以外の写真は一切保存しない）
     $photo = null; $photoRejected = false;
-    if ($type === 'message' && $kind === 'image') {
+    if ($type === 'message' && $kind === 'image' && $pre['member']) {
         $bytes = wsc_fetch_content((string)($message['id'] ?? ''));
         if ($bytes === null) throw new RuntimeException('image download failed');   // 再送で再試行
         $photo = wsc_store_photo($bytes);
@@ -80,30 +86,69 @@ function wsc_handle_event(array $event): void
     $replies = [];
     $pushTo = [];
     wsc_state(function (array &$s) use ($eventId, $type, $kind, $message, $userKey, $lineUser, &$photo, $photoRejected, &$replies, &$pushTo) {
-        if (isset($s['seen'][$eventId])) {             // 並行実行で先に処理済み
-            if ($photo) wsc_delete_photo_files($photo['file']);
-            $photo = null;
-            return;
-        }
+        $dropPhoto = function () use (&$photo) { if ($photo) wsc_delete_photo_files($photo['file']); $photo = null; };
+        if (isset($s['seen'][$eventId])) { $dropPhoto(); return; }   // 並行実行で先に処理済み
         wsc_mark_seen($s, $eventId);
 
-        // 自分の放置下書きは返信で、他人の放置下書きはプッシュで受付通知
-        $own = $s['drafts'][$userKey] ?? null;
-        if ($own && isset($s['posts'][$own]) && (int)$s['posts'][$own]['last_activity'] <= time() - WSC_DRAFT_IDLE_SECONDS
-            && !($type === 'message' && $kind === 'text' && wsc_is_command((string)($message['text'] ?? ''), WSC_CMD_CANCEL))) {
-            if (wsc_submit_draft($s, $userKey)) $replies = array_merge($replies, wsc_msg_received());
-        }
-        $pushTo = array_values(array_diff(wsc_sweep_idle_drafts($s), [$lineUser]));
+        // 他の人の放置下書きは自動確定してプッシュ通知
+        foreach (wsc_sweep_idle_drafts($s) as $n) if ($n[0] !== $lineUser) $pushTo[] = $n;
 
-        if ($type === 'follow') { $replies = array_merge($replies, wsc_msg_welcome()); return; }
+        if ($type === 'follow') { $replies = wsc_msg_welcome(); return; }
         if ($type === 'unfollow') { wsc_cancel_draft($s, $userKey); return; }
         if ($type !== 'message') return;
 
+        // 連打・荒らし対策（1分あたりの操作数）
+        if (wsc_rate_limited($s, $userKey)) {
+            $dropPhoto();
+            if (empty($s['rate_notice'][$userKey]) || $s['rate_notice'][$userKey] < time() - 600) {
+                $s['rate_notice'][$userKey] = time();
+                $replies = wsc_msg_too_fast();
+            }
+            return;
+        }
+
+        $text = $kind === 'text' ? (string)($message['text'] ?? '') : '';
+
+        // 会員登録「登録 合言葉」
+        if ($kind === 'text' && ($reg = wsc_parse_registration($text)) !== null) {
+            if (wsc_is_blocked($s, $userKey)) { $replies = wsc_msg_blocked(); return; }
+            if (wsc_is_member($s, $userKey)) { $replies = wsc_msg_registered(); return; }
+            if (!wsc_passphrase_set($s)) { $replies = wsc_msg_registration_closed(); return; }
+            $today = date('Y-m-d');
+            $fails = (int)($s['regfail'][$today][$userKey] ?? 0);
+            if ($fails >= WSC_REG_FAIL_LIMIT) { $replies = wsc_msg_wrong_passphrase(true); return; }
+            if (password_verify(wsc_normalize_passphrase($reg['pass']), (string)wsc_setting($s, 'passphrase_hash', ''))) {
+                $s['members'][$userKey] = ['registered_at' => wsc_now(), 'name' => $reg['name'], 'blocked' => false];
+                $replies = wsc_msg_registered();
+            } else {
+                $s['regfail'] = [$today => (array)($s['regfail'][$today] ?? [])];
+                $s['regfail'][$today][$userKey] = $fails + 1;
+                $replies = wsc_msg_wrong_passphrase($fails + 1 >= WSC_REG_FAIL_LIMIT);
+            }
+            return;
+        }
+
+        if ($kind === 'text' && wsc_is_command($text, WSC_CMD_HELP)) { $replies = wsc_msg_help(); return; }
+
+        // ここから先は会員のみ
+        if (!wsc_is_member($s, $userKey)) {
+            $dropPhoto();
+            if ($kind === 'sticker') return;
+            $replies = wsc_is_blocked($s, $userKey) ? wsc_msg_blocked() : wsc_msg_need_registration();
+            return;
+        }
+
+        // 自分の放置下書き（1時間）は先に確定
+        $own = $s['drafts'][$userKey] ?? null;
+        if ($own && isset($s['posts'][$own]) && (int)$s['posts'][$own]['last_activity'] <= time() - WSC_DRAFT_IDLE_SECONDS
+            && !($kind === 'text' && wsc_is_command($text, WSC_CMD_CANCEL))) {
+            if ($done = wsc_submit_draft($s, $userKey)) $replies = array_merge($replies, wsc_msg_for($done));
+        }
+
         if ($kind === 'text') {
-            $text = (string)($message['text'] ?? '');
             if (wsc_is_command($text, WSC_CMD_SUBMIT)) {
                 $done = wsc_submit_draft($s, $userKey);
-                $replies = array_merge($replies, $done ? wsc_msg_received() : wsc_msg_nothing_to_submit());
+                $replies = array_merge($replies, $done ? wsc_msg_for($done) : wsc_msg_nothing_to_submit());
                 return;
             }
             if (wsc_is_command($text, WSC_CMD_CANCEL)) {
@@ -111,7 +156,6 @@ function wsc_handle_event(array $event): void
                 $replies = array_merge($replies, wsc_msg_cancelled());
                 return;
             }
-            if (wsc_is_command($text, WSC_CMD_HELP)) { $replies = array_merge($replies, wsc_msg_help()); return; }
         } elseif ($kind !== 'image') {
             if ($kind !== 'sticker') $replies = array_merge($replies, wsc_msg_unsupported());
             return;
@@ -123,8 +167,7 @@ function wsc_handle_event(array $event): void
         $isNew = false;
         if (!$draftId || !isset($s['posts'][$draftId])) {
             if (wsc_submits_today($s, $userKey) >= WSC_DAILY_SUBMIT_LIMIT) {
-                if ($photo) wsc_delete_photo_files($photo['file']);
-                $photo = null;
+                $dropPhoto();
                 $replies = array_merge($replies, wsc_msg_daily_limit());
                 return;
             }
@@ -139,12 +182,11 @@ function wsc_handle_event(array $event): void
         $post['updated_at'] = wsc_now();
         $post['_line_user'] = $lineUser;
         if ($kind === 'text') {
-            $post['texts'][] = wsc_clip((string)($message['text'] ?? ''), 1000);
+            $post['texts'][] = wsc_clip($text, 1000);
             if (count($post['texts']) > 20) $post['texts'] = array_slice($post['texts'], -20);
         } else {
             if (count($post['photos']) >= WSC_MAX_PHOTOS) {
-                wsc_delete_photo_files($photo['file']);
-                $photo = null;
+                $dropPhoto();
                 if (empty($post['notice_sent']['limit'])) {
                     $post['notice_sent']['limit'] = true;
                     $replies = array_merge($replies, wsc_msg_photo_limit());
@@ -152,11 +194,12 @@ function wsc_handle_event(array $event): void
                 return;
             }
             $post['photos'][] = ['file' => $photo['file'], 'w' => $photo['w'], 'h' => $photo['h'], 'hidden' => false, 'received_at' => wsc_now()];
+            $photo = null;
         }
         if ($isNew) $replies = array_merge($replies, wsc_msg_draft_started());
     });
 
     // 保存が完了してから返信（返信に失敗しても投稿は残る）
     if ($replies) wsc_reply((string)($event['replyToken'] ?? ''), $replies);
-    foreach ($pushTo as $to) wsc_push($to, wsc_msg_received());
+    wsc_notify_submitted($pushTo);
 }

@@ -93,7 +93,7 @@ function wsc_post_has_content(array $post): bool
     return !empty($post['photos']) || trim(implode('', $post['texts'] ?? [])) !== '';
 }
 
-/** 下書きを確定して承認待ちにする。返り値：確定した投稿（なければ null）。 */
+/** 下書きを確定する（通常は即時掲載）。返り値：確定した投稿（なければ null）。 */
 function wsc_submit_draft(array &$state, string $userKey): ?array
 {
     $id = $state['drafts'][$userKey] ?? null;
@@ -103,9 +103,17 @@ function wsc_submit_draft(array &$state, string $userKey): ?array
     if (!wsc_post_has_content($post)) { unset($state['posts'][$id]); return null; }
     $parsed = wsc_parse_texts($post['texts'] ?? []);
     foreach ($parsed as $k => $v) $post[$k] = $v;
-    $post['status'] = 'pending';
     $post['submitted_at'] = wsc_now();
     $post['updated_at'] = wsc_now();
+    // 送信確定と同時に自動掲載。自動掲載停止中・サイト全体の上限超過・停止中の会員は承認待ちにする。
+    if (wsc_can_auto_publish($state, (string)($post['user_key'] ?? ''))) {
+        $post['status'] = 'published';
+        $post['published_at'] = wsc_now();
+        $today = date('Y-m-d');
+        $state['daily'] = [$today => (int)($state['daily'][$today] ?? 0) + 1];
+    } else {
+        $post['status'] = 'pending';
+    }
     $copy = $post;
     unset($post['_line_user']);
     $state['submits'][$userKey][] = time();
@@ -113,7 +121,7 @@ function wsc_submit_draft(array &$state, string $userKey): ?array
     return $copy;
 }
 
-/** 放置された下書き（最終操作から1時間）を承認待ちへ。通知用に [LINEユーザーID] を返す。 */
+/** 放置された下書き（最終操作から1時間）を確定（＝掲載）。通知用に [[LINEユーザーID, 状態]] を返す。 */
 function wsc_sweep_idle_drafts(array &$state, ?int $now = null): array
 {
     $now = $now ?? time();
@@ -124,7 +132,7 @@ function wsc_sweep_idle_drafts(array &$state, ?int $now = null): array
         if (!$post) { unset($state['drafts'][$userKey]); continue; }
         if ((int)($post['last_activity'] ?? 0) > $now - WSC_DRAFT_IDLE_SECONDS) continue;
         $done = wsc_submit_draft($state, (string)$userKey);
-        if ($done && !empty($done['_line_user'])) $notify[] = (string)$done['_line_user'];
+        if ($done && !empty($done['_line_user'])) $notify[] = [(string)$done['_line_user'], (string)$done['status']];
     }
     return $notify;
 }
@@ -171,6 +179,72 @@ function wsc_tick(): int
     }, false);
     if (!$due) return 0;
     $notify = wsc_state(function (array &$s) { return wsc_sweep_idle_drafts($s); });
-    foreach ($notify as $to) wsc_push($to, wsc_msg_received());
+    wsc_notify_submitted($notify);
     return count($notify);
+}
+
+
+/** 自動確定の通知（プッシュ）。 */
+function wsc_notify_submitted(array $notify): void
+{
+    foreach ($notify as [$to, $status]) wsc_push($to, $status === 'published' ? wsc_msg_published() : wsc_msg_received_pending());
+}
+
+// ---------------------------------------------------------------- 会員（投稿できる人）の管理
+
+function wsc_setting(array $state, string $key, $default = null)
+{
+    return $state['settings'][$key] ?? $default;
+}
+
+/** 合言葉が設定済みか。未設定のあいだは誰も登録・投稿できない（安全側）。 */
+function wsc_passphrase_set(array $state): bool
+{
+    return (string)wsc_setting($state, 'passphrase_hash', '') !== '';
+}
+
+function wsc_is_member(array $state, string $userKey): bool
+{
+    $m = $state['members'][$userKey] ?? null;
+    return is_array($m) && empty($m['blocked']);
+}
+
+function wsc_is_blocked(array $state, string $userKey): bool
+{
+    return !empty($state['members'][$userKey]['blocked']);
+}
+
+function wsc_can_auto_publish(array $state, string $userKey): bool
+{
+    if (!wsc_setting($state, 'auto_publish', true)) return false;
+    if (!wsc_is_member($state, $userKey)) return false;
+    $today = date('Y-m-d');
+    return (int)($state['daily'][$today] ?? 0) < WSC_SITE_DAILY_PUBLISH;
+}
+
+/** 合言葉の照合（大文字小文字・全角半角・前後空白を区別しない）。 */
+function wsc_normalize_passphrase(string $p): string
+{
+    return mb_strtolower(trim(mb_convert_kana($p, 'asKV')));
+}
+
+/** 「登録 合言葉」「登録：合言葉」を解析。該当しなければ null。 */
+function wsc_parse_registration(string $text): ?array
+{
+    $t = trim(mb_convert_kana($text, 's'));
+    if (!preg_match('/^(?:登録|会員登録)\s*[:：]?\s*(\S+)(?:\s+(.{1,30}))?$/u', $t, $m)) return null;
+    return ['pass' => $m[1], 'name' => isset($m[2]) ? wsc_clip($m[2], 30) : ''];
+}
+
+/** 1分あたりの操作数制限。超えたら true（この操作は無視する）。 */
+function wsc_rate_limited(array &$state, string $userKey): bool
+{
+    $now = time();
+    $list = array_values(array_filter((array)($state['rate'][$userKey] ?? []), function ($t) use ($now) { return $t > $now - 60; }));
+    $list[] = $now;
+    $state['rate'][$userKey] = $list;
+    if (count($state['rate']) > 500) {
+        foreach ($state['rate'] as $k => $v) if (max((array)$v ?: [0]) < $now - 60) unset($state['rate'][$k]);
+    }
+    return count($list) > WSC_EVENTS_PER_MINUTE;
 }
