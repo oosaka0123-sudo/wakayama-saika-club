@@ -235,7 +235,7 @@ try:
                     for item in msg.get("quickReply", {}).get("items", [])
                 ) for msg in payload["messages"]):
                     quick_reply_count += 1
-    check(quick_reply_count == 2, "写真の受け取り案内に送信するボタンが付く")
+    check(quick_reply_count == 3, "写真2枚目にも短い案内と送信するボタンが付く")
 
     webhook([ev(UA, "text", text="送信")])
     webhook([ev(UA, "text", text="送信")])
@@ -433,7 +433,7 @@ try:
     check(d["status"] == "draft" and d["author"] == "山田", "名前は投稿者欄に引き継ぐ（まだ非公開）")
     n_rep = len(replies())
     webhook([ev(UD, "image", mid="1002")])
-    check(len(replies()) == n_rep and len(new_posts()[0]["photos"]) == 2, "2枚目の写真では同じ受け取り案内を重複して返さない（写真は追加される）")
+    check(len(replies()) == n_rep + 1 and len(new_posts()[0]["photos"]) == 2 and last_quick() == ["送信する"] and last()[0].startswith("写真2枚目を追加しました。"), "2枚目は短い別文と送信ボタンを返し、写真は同じ投稿へ追加")
     webhook([ev(UD, "text", text="朝からマダイが釣れました")])
     p = new_posts()[0]
     check(last() == ["ありがとうございます。釣果情報に掲載しました。\n" + URL], "コメントを送ると自動で掲載しお礼とリンクを返す（ボタン不要）")
@@ -543,13 +543,15 @@ try:
     webhook([ev(UK, "text", text="堺")])
     check(last() == ["堺さん、こんにちは。\n釣果の写真を送ってください（1〜5枚）。"] and set(store()["posts"]) == before_ids,
           f"漢字1文字の名字「堺」も名前として受け取る（投稿は作らない）: {last()!r}")
+    webhook([ev(UK, "text", text="栄")])
+    check(last() == ["栄さん、こんにちは。\n釣果の写真を送ってください（1〜5枚）。"] and set(store()["posts"]) == before_ids, "栄も名前として受け取る")
     webhook([ev(UK, "text", text="山本")])
     check(last() == ["山本さん、こんにちは。\n釣果の写真を送ってください（1〜5枚）。"] and set(store()["posts"]) == before_ids,
           f"続けて「山本」も名前として受け取り、文章扱いにしない: {last()!r}")
     n_rep = len(replies())
     webhook([ev(UK, "image", mid="1001"), ev(UK, "image", mid="1002")])
     acks = [t for _, ts in replies()[n_rep:] for t in ts if t == PHOTO_MSG]
-    check(len(acks) == 1 and len(replies()) == n_rep + 1, f"写真2枚を続けて送っても受け取り案内は1回だけ: {replies()[n_rep:]!r}")
+    check(len(acks) == 1 and len(replies()) == n_rep + 2 and last()[0].startswith("写真2枚目を追加しました。") and last_quick() == ["送信する"], f"写真2枚は異なる文面、最新の返信に送信ボタン: {replies()[n_rep:]!r}")
     webhook([ev(UK, "text", text="送信")])
     r = [p for i, p in store()["posts"].items() if i not in before_ids]
     check(len(r) == 1 and r[0]["status"] == "published" and len(r[0]["photos"]) == 2 and r[0]["author"] == "山本" and r[0]["comment"] == ""
