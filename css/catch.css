@@ -37,10 +37,20 @@
 .catch-empty img{width:92px;height:auto;margin:0 auto 14px;display:block;filter:drop-shadow(0 2px 0 #0002)}
 .catch-empty-title{font-weight:900;font-size:clamp(18px,2.2vw,22px);margin:0 0 8px}
 .catch-empty p{margin:0;color:#536570}
-.catch-howto{margin-top:clamp(40px,6vw,64px);background:#0c1720;color:#fff;padding:clamp(22px,3vw,34px);border-left:4px solid var(--orange)}
-.catch-howto h3{margin:0 0 12px;font-size:clamp(17px,2vw,21px)}
-.catch-howto ol{margin:0;padding-left:1.4em;line-height:1.9;font-size:15px}
-.catch-line{margin:18px 0 0}
-.catch-line .btn{background:#06c755;color:#fff;border-color:#06c755}
-@media(max-width:640px){.catch-list{grid-template-columns:1fr}.catch-body{padding:13px 14px 16px}}
+.catch-howto{margin:0 0 clamp(34px,5vw,58px);background:#0c1720;color:#fff;padding:clamp(22px,3.5vw,36px);border-left:4px solid var(--orange);border-radius:0 6px 6px 0}
+.catch-howto-label{font-size:12px;letter-spacing:.12em;color:#f9aa6b;font-weight:800;margin:0 0 7px}
+.catch-howto h2{font-size:clamp(22px,3vw,28px);line-height:1.4;margin:0 0 8px}
+.catch-howto-intro{font-size:16px;line-height:1.8;margin:0 0 18px}
+.catch-howto-first{background:#ffffff14;border:1px solid #ffffff35;border-radius:5px;padding:13px 15px;font-size:15px;line-height:1.8;margin:0 0 20px}
+.catch-howto-first strong{display:inline-block;background:#f08a36;color:#101a21;padding:2px 9px;border-radius:3px;margin-right:8px}
+.catch-howto-steps{counter-reset:catchstep;list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.catch-howto-steps li{counter-increment:catchstep;background:#ffffff12;border:1px solid #ffffff30;border-radius:5px;padding:15px 12px 14px;min-width:0}
+.catch-howto-steps li:before{content:counter(catchstep);display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#f08a36;color:#0c1720;font-weight:900;margin-right:7px}
+.catch-howto-steps strong{font-size:16px}
+.catch-howto-steps span{display:block;font-size:15px;line-height:1.8;margin-top:8px}
+.catch-howto-steps small{display:block;font-size:13px;color:#e2e8eb;line-height:1.7;margin-top:3px}
+.catch-howto-note{font-size:14px;line-height:1.8;margin:16px 0 0;color:#e2e8eb}
+.catch-line{margin:19px 0 0}
+.catch-line .btn{background:#06c755;color:#061510;border-color:#06c755;font-size:16px;font-weight:900;min-height:48px;display:inline-flex;align-items:center;padding:12px 20px}
+@media(max-width:760px){.catch-howto-steps{grid-template-columns:1fr;gap:8px}.catch-howto-steps li{padding:12px 14px}.catch-howto-steps span{margin-top:3px}.catch-howto{padding:20px 17px}.catch-howto-intro{font-size:15px}.catch-line .btn{width:100%;justify-content:center}}@media(max-width:640px){.catch-list{grid-template-columns:1fr}.catch-body{padding:13px 14px 16px}}
 @media(prefers-reduced-motion:reduce){.catch-track{scroll-behavior:auto}}
