@@ -12,6 +12,7 @@
   video.src = VIDEO_URL;
   video.addEventListener("loadeddata", function () {
     video.classList.add("is-ready");
+    video.parentElement.classList.add("has-video");
     const label = document.querySelector(".location-hero-caption");
     if (label) label.hidden = true;
   }, { once: true });
