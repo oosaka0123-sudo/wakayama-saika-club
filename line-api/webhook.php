@@ -168,6 +168,43 @@ function wsc_handle_event(array $event): void
         }
         if ($kind === 'image' && $photoRejected) { $replies = array_merge($replies, wsc_msg_photo_rejected()); return; }
 
+        // 写真のみを先に掲載した人が、その後にコメントを送った場合は
+        // 直近60分の同じ写真投稿に一度だけ追記する（高齢の会員向け）。
+        // すでに別の下書きを始めている場合やコメント済みの投稿は変更しない。
+        if ($kind === 'text' && trim($text) !== '' && empty($s['drafts'][$userKey])) {
+            $recentId = null;
+            $recentTime = 0;
+            foreach ($s['posts'] as $pid => $prev) {
+                if (($prev['user_key'] ?? '') !== $userKey
+                    || ($prev['status'] ?? '') !== 'published'
+                    || empty($prev['photos'])
+                    || trim((string)($prev['comment'] ?? '')) !== '') continue;
+                $when = strtotime((string)($prev['submitted_at'] ?? '')) ?: 0;
+                if ($when < time() - 3600 || $when > time() || $when <= $recentTime) continue;
+                $recentId = $pid;
+                $recentTime = $when;
+            }
+            if ($recentId !== null) {
+                $prev = &$s['posts'][$recentId];
+                $prev['texts'][] = wsc_clip($text, 1000);
+                if (count($prev['texts']) > 20) $prev['texts'] = array_slice($prev['texts'], -20);
+                $parsed = wsc_parse_texts($prev['texts']);
+                foreach (['fish', 'caught_on', 'author'] as $field) {
+                    if (trim((string)($prev[$field] ?? '')) === '' && $parsed[$field] !== '') {
+                        $prev[$field] = $parsed[$field];
+                    }
+                }
+                // 数量だけの文章も空欄にせず、コメントとしてそのまま残す。
+                $prev['comment'] = $parsed['comment'] !== '' ? $parsed['comment'] : wsc_clip($text, 600);
+                $prev['updated_at'] = wsc_now();
+                unset($prev);
+                $replies = array_merge($replies, [wsc_text_message(
+                    "先ほどの釣果情報にコメントを追加しました。\\nホームページで確認できます。"
+                )]);
+                return;
+            }
+        }
+
         // 下書きへ追加
         $draftId = $s['drafts'][$userKey] ?? null;
         $isNew = false;
