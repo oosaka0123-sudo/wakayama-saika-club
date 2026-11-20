@@ -179,10 +179,29 @@ function wsc_handle_event(array $event): void
         }
         if ($kind === 'image' && $photoRejected) { $replies = array_merge($replies, wsc_msg_photo_rejected()); return; }
 
-        // 下書きがない状態で名前だけが届いた場合は、名前を覚えて写真を待つ（写真なしでは投稿を作らない）。
-        if ($kind === 'text' && empty($s['drafts'][$userKey]) && ($name = wsc_parse_name_message($text)) !== null) {
-            $s['members'][$userKey]['pending_name'] = $name;
-            $s['members'][$userKey]['pending_name_at'] = time();
+        // 写真を受け取る前（下書きなし、または写真のない下書き）に名前だけが届いた場合は、投稿者名として扱う。
+        // ・下書きなし → 名前を覚えて写真を待つ（写真なしでは投稿を作らない）
+        // ・写真のない古い下書き → 残っていた投稿者名を今回の名前で置き換える（コメントには入れない）
+        $nameDraftId = $s['drafts'][$userKey] ?? null;
+        $nameDraftOpen = $nameDraftId && isset($s['posts'][$nameDraftId]);
+        if ($kind === 'text' && (!$nameDraftOpen || empty($s['posts'][$nameDraftId]['photos']))
+            && ($name = wsc_parse_name_message($text)) !== null) {
+            if ($nameDraftOpen) {
+                $post = &$s['posts'][$nameDraftId];
+                // 以前の名前（「投稿者：…」や名前だけの文章）は取り除き、今回の名前だけを残す
+                $post['texts'] = array_values(array_filter($post['texts'] ?? [], function ($t) {
+                    return !preg_match('/^(?:投稿者|お名前|名前|ニックネーム|ペンネーム)\s*[:：]/u', trim((string)$t))
+                        && wsc_parse_name_message((string)$t) === null;
+                }));
+                $post['texts'][] = '投稿者：' . $name;
+                $post['author'] = $name;
+                $post['last_activity'] = time();
+                $post['updated_at'] = wsc_now();
+                unset($post);
+            } else {
+                $s['members'][$userKey]['pending_name'] = $name;
+                $s['members'][$userKey]['pending_name_at'] = time();
+            }
             $replies = array_merge($replies, wsc_msg_name_greeting($name));
             return;
         }
@@ -278,8 +297,9 @@ function wsc_handle_event(array $event): void
             $post['photos'][] = ['file' => $photo['file'], 'w' => $photo['w'], 'h' => $photo['h'], 'hidden' => false, 'received_at' => wsc_now()];
             $photo = null;
         }
-        // LINEのクイック返信は次のメッセージで消える。写真を受け取るたびに「送信する」を付け直す。
-        $replies = array_merge($replies, wsc_msg_photo_received());
+        // 続けて何枚か送られても同じ案内を繰り返さないよう、受け取りの案内は1枚目のときだけ返す。
+        // 2枚目以降のあとは、コメントを送るか「送信」と入力すれば掲載できる。
+        if (count($post['photos']) === 1) $replies = array_merge($replies, wsc_msg_photo_received());
     });
 
     // 保存が完了してから返信（返信に失敗しても投稿は残る）
