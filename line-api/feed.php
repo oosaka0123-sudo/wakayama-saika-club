@@ -17,6 +17,7 @@ if ($method !== 'GET' && $method !== 'HEAD') wsc_json(405, ['error' => 'Method n
 
 try {
     if (!wsc_is_configured()) wsc_json(200, ['posts' => [], 'status' => 'preparing'], array_merge($cors, ['Cache-Control: no-store']));
+    try { wsc_tick(); } catch (Throwable $e) { wsc_log('feed tick: ' . $e->getMessage()); }
     $state = wsc_read_state();
     $published = array_filter($state['posts'], function ($p) { return ($p['status'] ?? '') === 'published'; });
     uasort($published, function ($a, $b) { return strcmp(wsc_sort_key($b), wsc_sort_key($a)); });

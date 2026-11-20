@@ -277,10 +277,31 @@ try:
     path = os.path.join(app, "private", "data", "store.json")
     s["posts"][did]["last_activity"] -= 4000
     json.dump(s, open(path, "w", encoding="utf-8"), ensure_ascii=False)
-    req("admin/")
-    check(store()["posts"][did]["status"] == "pending" and not store()["drafts"], "1時間放置の下書きは承認待ちへ")
+    os.utime(os.path.join(app, "private", "data", "tick.stamp"), (0, 0))
+    st, body, _ = req("tick.php")
+    check(st == 200 and json.loads(body) == {"ok": True}, "tick.phpは情報を返さない")
+    check(store()["posts"][did]["status"] == "pending" and not store()["drafts"], "Webhook・管理画面なしでも1時間放置の下書きは承認待ちへ（tick）")
     pushes = [l for l in open(httplog, encoding="utf-8") if json.loads(l)["u"].endswith("/message/push")]
     check(len(pushes) == 1, "自動確定時のみプッシュで受付通知")
+
+    # 59分では確定しない／feed表示時にも確定される
+    webhook([ev(UB, "image", mid="1002")])
+    s = store(); did2 = s["drafts"][list(s["drafts"].keys())[0]]
+    s["posts"][did2]["last_activity"] -= 3540
+    json.dump(s, open(path, "w", encoding="utf-8"), ensure_ascii=False)
+    os.utime(os.path.join(app, "private", "data", "tick.stamp"), (0, 0))
+    req("tick.php")
+    check(store()["posts"][did2]["status"] == "draft", "59分では自動確定しない")
+    s = store(); s["posts"][did2]["last_activity"] -= 120
+    json.dump(s, open(path, "w", encoding="utf-8"), ensure_ascii=False)
+    os.utime(os.path.join(app, "private", "data", "tick.stamp"), (0, 0))
+    req("feed.php")
+    check(store()["posts"][did2]["status"] == "pending", "公開API表示時にも自動確定（予備）")
+    try:
+        urllib.request.urlopen(BASE + f"photo.php?p={did2}&i=0&s=l", timeout=5); anon = 200
+    except urllib.error.HTTPError as e:
+        anon = e.code
+    check(anon == 404, "自動確定後も未承認写真は外部から見えない")
 
     # XSS
     st, body, _ = req(f"admin/?id={pa['id']}")

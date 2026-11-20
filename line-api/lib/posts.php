@@ -152,3 +152,25 @@ function wsc_submits_today(array $state, string $userKey): int
 {
     return count(array_filter($state['submits'][$userKey] ?? [], function ($t) { return $t > time() - 86400; }));
 }
+
+/**
+ * 放置下書きの自動確定（Webhookが来なくても動くよう、定期呼び出し・公開APIから実行）。
+ * 50秒に1回までに制限。確定した件数を返し、受付通知はプッシュで送る。
+ */
+function wsc_tick(): int
+{
+    $stamp = wsc_path('data/tick.stamp');
+    if (is_file($stamp) && filemtime($stamp) > time() - 50) return 0;
+    @touch($stamp);
+    // 期限切れの下書きがあるときだけ書き込みロックを取る
+    $due = wsc_state(function (array &$s) {
+        foreach ($s['drafts'] as $id) {
+            if (isset($s['posts'][$id]) && (int)($s['posts'][$id]['last_activity'] ?? 0) <= time() - WSC_DRAFT_IDLE_SECONDS) return true;
+        }
+        return false;
+    }, false);
+    if (!$due) return 0;
+    $notify = wsc_state(function (array &$s) { return wsc_sweep_idle_drafts($s); });
+    foreach ($notify as $to) wsc_push($to, wsc_msg_received());
+    return count($notify);
+}
