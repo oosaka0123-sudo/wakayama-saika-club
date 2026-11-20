@@ -42,6 +42,15 @@ function wsc_msg_draft_started(): array
     )];
 }
 
+/** 2通目以降の写真・コメントにもクイック返信を付け直す。LINEは次の発言でボタンを消すため。 */
+function wsc_msg_draft_continued(): array
+{
+    return [wsc_text_message(
+        "追加しました。送り終わったら下の「送信する」を押してください。",
+        wsc_quick_submit()
+    )];
+}
+
 function wsc_msg_published(): array
 {
     return [wsc_text_message(
