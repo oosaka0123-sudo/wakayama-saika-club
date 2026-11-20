@@ -170,6 +170,7 @@ function wsc_handle_event(array $event): void
             }
             if (wsc_is_command($text, WSC_CMD_CANCEL)) {
                 wsc_cancel_draft($s, $userKey);
+                unset($s['members'][$userKey]['pending_name'], $s['members'][$userKey]['pending_name_at']);
                 $replies = array_merge($replies, wsc_msg_cancelled());
                 return;
             }
@@ -187,22 +188,14 @@ function wsc_handle_event(array $event): void
             return;
         }
 
-        // 写真のみを先に掲載した人が、その後にコメントを送った場合は
-        // 直近60分の同じ写真投稿に一度だけ追記する（高齢の会員向け）。
-        // すでに別の下書きを始めている場合やコメント済みの投稿は変更しない。
-        if ($kind === 'text' && trim($text) !== '' && empty($s['drafts'][$userKey])) {
-            $recentId = null;
-            $recentTime = 0;
-            foreach ($s['posts'] as $pid => $prev) {
-                if (($prev['user_key'] ?? '') !== $userKey
-                    || ($prev['status'] ?? '') !== 'published'
-                    || empty($prev['photos'])
-                    || trim((string)($prev['comment'] ?? '')) !== '') continue;
-                $when = strtotime((string)($prev['submitted_at'] ?? '')) ?: 0;
-                if ($when < time() - 3600 || $when > time() || $when <= $recentTime) continue;
-                $recentId = $pid;
-                $recentTime = $when;
-            }
+        // 掲載直後に届いた文章は、新しい投稿にせず直近の投稿へ追記する（高齢の会員向け）。
+        //  ・写真だけで掲載した投稿：直近60分、コメントが空のとき一度だけ
+        //  ・コメントで自動掲載した投稿：直近10分、続けて送られた文章を追記
+        // すでに別の下書きを始めている場合は変更しない。
+        // 名前を先に送った直後（pending_name）は新しい釣果の始まりなので、追記しない。
+        if ($kind === 'text' && trim($text) !== '' && empty($s['drafts'][$userKey])
+            && empty($s['members'][$userKey]['pending_name'])) {
+            $recentId = wsc_find_append_target($s, $userKey);
             if ($recentId !== null) {
                 $prev = &$s['posts'][$recentId];
                 $prev['texts'][] = wsc_clip($text, 1000);
@@ -224,8 +217,26 @@ function wsc_handle_event(array $event): void
             }
         }
 
+        // 掲載の直後（2分以内）に遅れて届いた写真は、新しい投稿にせず同じ投稿へ追加する。
+        // 新しい名前を送っている場合は別の釣果として扱う。
+        if ($kind === 'image' && empty($s['drafts'][$userKey]) && $photo !== null
+            && empty($s['members'][$userKey]['pending_name'])) {
+            foreach ($s['posts'] as $pid => &$prev) {
+                if (($prev['user_key'] ?? '') !== $userKey || ($prev['status'] ?? '') !== 'published'
+                    || (int)($prev['auto_comment_at'] ?? 0) < time() - 120
+                    || count($prev['photos'] ?? []) >= WSC_MAX_PHOTOS) continue;
+                $prev['photos'][] = ['file' => $photo['file'], 'w' => $photo['w'], 'h' => $photo['h'], 'hidden' => false, 'received_at' => wsc_now()];
+                $prev['updated_at'] = wsc_now();
+                $photo = null;
+                $replies = array_merge($replies, wsc_msg_photo_added());
+                break;
+            }
+            unset($prev);
+            if ($photo === null) return;
+        }
+
         // 下書きへ追加
-        $draftId = $s['drafts'][$userKey] ?? null;
+        $draftId =$s['drafts'][$userKey] ?? null;
         $isNew = false;
         if (!$draftId || !isset($s['posts'][$draftId])) {
             if (wsc_submits_today($s, $userKey) >= WSC_DAILY_SUBMIT_LIMIT) {
@@ -261,6 +272,7 @@ function wsc_handle_event(array $event): void
                 // 写真のあとのコメントは、そのまま確定して掲載（「送信する」を押させない）。
                 unset($post);
                 $done = wsc_submit_draft($s, $userKey);
+                if ($done) $s['posts'][$done['id']]['auto_comment_at'] = time();   // 続きの文章・遅れた写真を同じ投稿へ
                 $replies = array_merge($replies, $done ? wsc_msg_for($done) : wsc_msg_need_photo());
                 return;
             }
