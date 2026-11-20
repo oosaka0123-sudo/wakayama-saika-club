@@ -1,8 +1,8 @@
 /* 和歌山雑賀クラブ／所在地特設ページの背景映像
- * 利用許諾を確認した実際の空撮映像を次のパスに配置するだけで自動反映します。
+ * 提供されたマリーナのイメージ映像（10秒・無音）を表示します。
  * assets/videos/wsc-marina-drone.mp4
- * 映像がない場合・再生できない場合は既存の写真演出を表示します。
- * 現状、動画ファイルは未設置です（存在しない映像を掲載済みと扱わない）。
+ * 再生できない場合や動きを減らす設定の場合は静止画を表示します。
+ * 2026-11-20 提供された映像をサイト用に軽量化して設置済みです。
  */
 (function () {
   "use strict";
@@ -25,7 +25,7 @@
     video.addEventListener("playing", function () {
       video.classList.add("is-ready");
       video.parentElement.classList.add("has-video");
-      if (caption) caption.hidden = true;
+      // 映像は実写の現地映像と確認できていないため、イメージ映像の注記を残す。
     }, { once: true });
     video.addEventListener("error", restorePhoto, { once: true });
     video.src = VIDEO_URL;
