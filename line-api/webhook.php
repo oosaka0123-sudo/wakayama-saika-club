@@ -239,7 +239,8 @@ function wsc_handle_event(array $event): void
             $post['photos'][] = ['file' => $photo['file'], 'w' => $photo['w'], 'h' => $photo['h'], 'hidden' => false, 'received_at' => wsc_now()];
             $photo = null;
         }
-        if ($isNew) $replies = array_merge($replies, wsc_msg_draft_started());
+        // LINEのクイック返信は次のメッセージで消える。写真・コメントのたびに再表示する。
+        $replies = array_merge($replies, $isNew ? wsc_msg_draft_started() : wsc_msg_draft_continued());
     });
 
     // 保存が完了してから返信（返信に失敗しても投稿は残る）
