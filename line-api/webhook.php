@@ -3,7 +3,8 @@
  * LINE Webhook 受付
  * 1) 生のボディで署名検証 → 失敗は 401 で拒否
  * 2) webhookEventId で重複排除（LINEの再送にも対応）
- * 3) 未登録者は合言葉だけで登録。登録後は写真・文章を貯め「送信」で自動掲載
+ * 3) 未登録者は合言葉だけで登録。登録後は［名前（任意）→写真→コメント］で、コメント送信時に自動掲載
+ *    （コメントなしは「送信する」ボタン。写真が1枚もない投稿は掲載しない）
  */
 declare(strict_types=1);
 define('WSC_APP', true);
@@ -148,13 +149,23 @@ function wsc_handle_event(array $event): void
         $own = $s['drafts'][$userKey] ?? null;
         if ($own && isset($s['posts'][$own]) && (int)$s['posts'][$own]['last_activity'] <= time() - WSC_DRAFT_IDLE_SECONDS
             && !($kind === 'text' && wsc_is_command($text, WSC_CMD_CANCEL))) {
-            if ($done = wsc_submit_draft($s, $userKey)) $replies = array_merge($replies, wsc_msg_for($done));
+            if ($done = wsc_finalize_idle_draft($s, $userKey)) $replies = array_merge($replies, wsc_msg_for($done));
         }
 
         if ($kind === 'text') {
             if (wsc_is_command($text, WSC_CMD_SUBMIT)) {
-                $done = wsc_submit_draft($s, $userKey);
-                $replies = array_merge($replies, $done ? wsc_msg_for($done) : wsc_msg_nothing_to_submit());
+                $ownDraft = $s['drafts'][$userKey] ?? null;
+                $done = wsc_submit_draft($s, $userKey);   // 写真がなければ null（公開しない）
+                if ($done) {
+                    $replies = array_merge($replies, wsc_msg_for($done));
+                } elseif ($ownDraft && isset($s['posts'][$ownDraft])) {
+                    $replies = array_merge($replies, wsc_msg_need_photo());
+                } elseif ($recent = wsc_recent_submitted_post($s, $userKey)) {
+                    // コメントで自動掲載された後に「送信する」を押された場合など。二重投稿しない。
+                    $replies = array_merge($replies, ($recent['status'] ?? '') === 'published' ? wsc_msg_already_published() : wsc_msg_already_received());
+                } else {
+                    $replies = array_merge($replies, wsc_msg_nothing_to_submit());
+                }
                 return;
             }
             if (wsc_is_command($text, WSC_CMD_CANCEL)) {
@@ -167,6 +178,14 @@ function wsc_handle_event(array $event): void
             return;
         }
         if ($kind === 'image' && $photoRejected) { $replies = array_merge($replies, wsc_msg_photo_rejected()); return; }
+
+        // 下書きがない状態で名前だけが届いた場合は、名前を覚えて写真を待つ（写真なしでは投稿を作らない）。
+        if ($kind === 'text' && empty($s['drafts'][$userKey]) && ($name = wsc_parse_name_message($text)) !== null) {
+            $s['members'][$userKey]['pending_name'] = $name;
+            $s['members'][$userKey]['pending_name_at'] = time();
+            $replies = array_merge($replies, wsc_msg_name_greeting($name));
+            return;
+        }
 
         // 写真のみを先に掲載した人が、その後にコメントを送った場合は
         // 直近60分の同じ写真投稿に一度だけ追記する（高齢の会員向け）。
@@ -224,9 +243,29 @@ function wsc_handle_event(array $event): void
         $post['last_activity'] = time();
         $post['updated_at'] = wsc_now();
         $post['_line_user'] = $lineUser;
+        if ($isNew) {
+            // 先に送られた名前（12時間以内）を投稿者として引き継ぐ。1回使ったら消す。
+            $m = $s['members'][$userKey] ?? [];
+            if (!empty($m['pending_name'])) {
+                if ((int)($m['pending_name_at'] ?? 0) >= time() - WSC_NAME_KEEP_SECONDS) {
+                    $post['texts'][] = '投稿者：' . $m['pending_name'];
+                    $post['author'] = (string)$m['pending_name'];
+                }
+                unset($s['members'][$userKey]['pending_name'], $s['members'][$userKey]['pending_name_at']);
+            }
+        }
         if ($kind === 'text') {
             $post['texts'][] = wsc_clip($text, 1000);
             if (count($post['texts']) > 20) $post['texts'] = array_slice($post['texts'], -20);
+            if (!empty($post['photos'])) {
+                // 写真のあとのコメントは、そのまま確定して掲載（「送信する」を押させない）。
+                unset($post);
+                $done = wsc_submit_draft($s, $userKey);
+                $replies = array_merge($replies, $done ? wsc_msg_for($done) : wsc_msg_need_photo());
+                return;
+            }
+            $replies = array_merge($replies, wsc_msg_text_wait_photo());
+            return;
         } else {
             if (count($post['photos']) >= WSC_MAX_PHOTOS) {
                 $dropPhoto();
@@ -239,8 +278,8 @@ function wsc_handle_event(array $event): void
             $post['photos'][] = ['file' => $photo['file'], 'w' => $photo['w'], 'h' => $photo['h'], 'hidden' => false, 'received_at' => wsc_now()];
             $photo = null;
         }
-        // LINEのクイック返信は次のメッセージで消える。写真・コメントのたびに再表示する。
-        $replies = array_merge($replies, $isNew ? wsc_msg_draft_started() : wsc_msg_draft_continued());
+        // LINEのクイック返信は次のメッセージで消える。写真を受け取るたびに「送信する」を付け直す。
+        $replies = array_merge($replies, wsc_msg_photo_received());
     });
 
     // 保存が完了してから返信（返信に失敗しても投稿は残る）

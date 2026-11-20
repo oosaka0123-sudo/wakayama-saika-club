@@ -97,10 +97,11 @@ function wsc_post_has_content(array $post): bool
 function wsc_submit_draft(array &$state, string $userKey): ?array
 {
     $id = $state['drafts'][$userKey] ?? null;
+    if (!$id || !isset($state['posts'][$id])) { unset($state['drafts'][$userKey]); return null; }
+    // 写真がない下書きは掲載しない（氏名・文章だけの投稿を防ぐ）。下書きは残して写真を待つ。
+    if (empty($state['posts'][$id]['photos'])) return null;
     unset($state['drafts'][$userKey]);
-    if (!$id || !isset($state['posts'][$id])) return null;
     $post = &$state['posts'][$id];
-    if (!wsc_post_has_content($post)) { unset($state['posts'][$id]); return null; }
     $parsed = wsc_parse_texts($post['texts'] ?? []);
     foreach ($parsed as $k => $v) $post[$k] = $v;
     $post['submitted_at'] = wsc_now();
@@ -131,10 +132,55 @@ function wsc_sweep_idle_drafts(array &$state, ?int $now = null): array
         $post = $state['posts'][$id] ?? null;
         if (!$post) { unset($state['drafts'][$userKey]); continue; }
         if ((int)($post['last_activity'] ?? 0) > $now - WSC_DRAFT_IDLE_SECONDS) continue;
-        $done = wsc_submit_draft($state, (string)$userKey);
+        $done = wsc_finalize_idle_draft($state, (string)$userKey);
         if ($done && !empty($done['_line_user'])) $notify[] = [(string)$done['_line_user'], (string)$done['status']];
     }
     return $notify;
+}
+
+/** 放置された下書きの後始末。写真があれば確定、写真がなければ（掲載できないので）破棄する。 */
+function wsc_finalize_idle_draft(array &$state, string $userKey): ?array
+{
+    $done = wsc_submit_draft($state, $userKey);
+    if (!$done && isset($state['drafts'][$userKey])) wsc_cancel_draft($state, $userKey);
+    return $done;
+}
+
+/** 直近1時間以内に確定した、この会員の最新の投稿（二重送信の案内用）。 */
+function wsc_recent_submitted_post(array $state, string $userKey): ?array
+{
+    $best = null; $bestTime = 0;
+    foreach ($state['posts'] as $p) {
+        if (($p['user_key'] ?? '') !== $userKey || !in_array($p['status'] ?? '', ['published', 'pending'], true)) continue;
+        $when = strtotime((string)($p['submitted_at'] ?? '')) ?: 0;
+        if ($when >= time() - 3600 && $when >= $bestTime) { $best = $p; $bestTime = $when; }
+    }
+    return $best;
+}
+
+const WSC_NAME_KEEP_SECONDS = 43200;   // 先に送られた名前を覚えておく時間（12時間）
+
+/**
+ * 「山田」「山田太郎」「まこ」「山田さん」「名前：山田」のような名前だけの短いメッセージから名前を取り出す。
+ * 魚種・挨拶・コメントらしいものは null（名前と断定しない）。
+ */
+function wsc_parse_name_message(string $text): ?string
+{
+    $t = trim(mb_convert_kana($text, 's'));
+    if ($t === '' || preg_match('/\R/u', $t) || mb_strlen($t) > 40) return null;
+    $labeled = false;
+    if (preg_match('/^(?:投稿者|お名前|名前|ニックネーム|ペンネーム)\s*[:：]\s*(\S.*)$/u', $t, $m)) { $t = trim($m[1]); $labeled = true; }
+    $t = trim(preg_replace('/(?:さん|さま|様|くん|君|ちゃん)$/u', '', $t) ?? '');
+    if ($t === '' || preg_match('/[<>&"\'\\\\]/u', $t)) return null;
+    if ($labeled) return wsc_clip($t, 30) ?: null;
+    if (mb_strlen($t) < 2 || mb_strlen($t) > 8) return null;
+    if (!preg_match('/^[\p{Han}\p{Hiragana}\p{Katakana}ー々A-Za-z]+(?: [\p{Han}\p{Hiragana}\p{Katakana}ー々A-Za-z]+)?$/u', $t)) return null;
+    if (preg_match('/匹|尾|本|枚|杯|キロ|釣|魚|大漁|不漁|ありがとう|お疲れ|です|ます|でした|ました|ください|よろしく|すみません|おはよう|こんにち|こんばん/u', $t)) return null;
+    $stop = ['はい', 'いいえ', 'ok', 'りょうかい', '了解', 'なし', 'ボウズ', '坊主', 'マダイ', 'タイ', 'クロダイ', 'チヌ', 'アジ', 'サバ', 'イワシ', 'ブリ',
+        'ハマチ', 'メジロ', 'カンパチ', 'ヒラメ', 'スズキ', 'グレ', 'メバル', 'カサゴ', 'ガシラ', 'キス', 'ハゼ', 'イカ', 'アオリイカ', 'タコ', 'サゴシ', 'サワラ',
+        'タチウオ', 'ヒラマサ', 'シーバス', 'サヨリ', 'カワハギ', 'ウマヅラ', 'アコウ', 'キジハタ', 'ハタ', 'ヤズ', 'ワラサ', 'イサキ', 'アマダイ', 'ガッシー'];
+    if (in_array(mb_strtolower($t), array_map('mb_strtolower', $stop), true)) return null;
+    return wsc_clip($t, 30);
 }
 
 function wsc_cancel_draft(array &$state, string $userKey): bool
