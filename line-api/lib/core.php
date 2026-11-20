@@ -11,12 +11,16 @@ const WSC_MAX_PHOTOS = 5;
 const WSC_DRAFT_IDLE_SECONDS = 3600;      // 送信忘れの下書きは1時間後に自動で「承認待ち」へ
 const WSC_DAILY_SUBMIT_LIMIT = 10;
 
-/** 非公開領域（設定・投稿データ・写真）。line-api の外側 ../wsc-catch-private があれば優先。 */
+/**
+ * 非公開領域（設定・投稿データ・写真）。
+ * 本番は公開フォルダの外 saika/catch-private（= line-api の3階層上の catch-private）を使う。
+ * 見つからない場合のみ line-api/private（.htaccessで遮断）を使う。
+ */
 function wsc_private_dir(): string
 {
     static $dir = null;
     if ($dir !== null) return $dir;
-    $outside = dirname(__DIR__, 2) . '/wsc-catch-private';
+    $outside = dirname(__DIR__, 3) . '/catch-private';
     $dir = is_dir($outside) ? $outside : dirname(__DIR__) . '/private';
     return $dir;
 }
