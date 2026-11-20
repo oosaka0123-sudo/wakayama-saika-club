@@ -1,0 +1,47 @@
+name: Azuma Lolipop staging verification and ZIP
+
+on:
+  push:
+    branches:
+      - feat/wsc-line-lolipop-staging-20261119
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-and-package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout isolated staging branch
+        uses: actions/checkout@v4
+      - name: Check staging links, privacy and safety invariants
+        run: node tests/check-staging.cjs
+      - name: Validate JavaScript syntax
+        run: |
+          for file in js/*.js; do node --check "$file"; done
+      - name: Validate PHP syntax
+        run: |
+          php --version
+          find line-api -type f -name '*.php' -print0 | xargs -0 -n 1 php -l
+      - name: Produce Lolipop package with no private data
+        shell: pwsh
+        run: ./tools/package-azuma.ps1
+      - name: Inspect ZIP manifest
+        run: |
+          unzip -Z1 dist/azuma-lolipop.zip > /tmp/azuma-list.txt
+          grep -Fxq 'index.html' /tmp/azuma-list.txt
+          grep -Fxq '.htaccess' /tmp/azuma-list.txt
+          grep -Fxq 'line-api/data/.htaccess' /tmp/azuma-list.txt
+          grep -Fxq 'line-api/uploads/.htaccess' /tmp/azuma-list.txt
+          grep -Fxq 'line-api/webhook.php' /tmp/azuma-list.txt
+          if grep -E '(^|/)(config\.local\.php|state\.json|BingSiteAuth\.xml|google[^/]*\.html)$' /tmp/azuma-list.txt; then
+            echo 'Private data or original-site verification files are in the ZIP!'
+            exit 1
+          fi
+      - name: Attach temporary deployment ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: azuma-lolipop-zip
+          path: dist/azuma-lolipop.zip
+          retention-days: 7
