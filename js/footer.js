@@ -13,7 +13,7 @@
         '<img src="' + base + 'assets/logo-wsc.svg" width="64" height="40" alt="WSC 船のロゴ">',
         '<div><small>WAKAYAMA SAIKA CLUB</small><span>和歌山雑賀クラブ</span></div>',
       '</a>',
-      '<p class="footer-about">1981年設立 ／ 会長：東 秀樹<br>「仲良く、安全に釣りを楽しむ」</p>',
+      '<p class="footer-about">1981年設立 ／ 担当：東<br>「仲良く、安全に釣りを楽しむ」</p>',
       '<nav class="footer-nav" aria-label="サイト内ページ一覧">',
         '<p class="footer-nav-title">SITE NAVIGATION</p>',
         '<ul class="footer-nav-list">',
