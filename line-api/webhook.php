@@ -309,9 +309,13 @@ function wsc_handle_event(array $event): void
             $post['photos'][] = ['file' => $photo['file'], 'w' => $photo['w'], 'h' => $photo['h'], 'hidden' => false, 'received_at' => wsc_now()];
             $photo = null;
         }
-        // 続けて何枚か送られても同じ案内を繰り返さないよう、受け取りの案内は1枚目のときだけ返す。
-        // 2枚目以降のあとは、コメントを送るか「送信」と入力すれば掲載できる。
-        if (count($post['photos']) === 1) $replies = array_merge($replies, wsc_msg_photo_received());
+        // 続けて何枚か送られても同じ案内を繰り返さないよう、1枚目は詳しく、2枚目以降は枚数だけ案内する。
+        // どの枚数でも最新の返信に「送信する」ボタンを付ける。
+        if (count($post['photos']) === 1) {
+            $replies = array_merge($replies, wsc_msg_photo_received());
+        } else {
+            $replies = array_merge($replies, wsc_msg_photo_more(count($post['photos'])));
+        }
     });
 
     // 保存が完了してから返信（返信に失敗しても投稿は残る）

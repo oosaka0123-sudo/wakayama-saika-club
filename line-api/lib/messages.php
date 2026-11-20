@@ -41,6 +41,14 @@ function wsc_msg_photo_received(): array
     )];
 }
 
+/** 2枚目以降も「送信する」を表示する。初回と同文を繰り返さない。 */
+function wsc_msg_photo_more(int $count): array
+{
+    return [wsc_text_message(
+        "写真{$count}枚目を追加しました。\nコメントがなければ『送信する』を押してください。",
+        wsc_quick_submit()
+    )];
+}
 /** 名前を先に送ったとき。 */
 function wsc_msg_name_greeting(string $name): array
 {
