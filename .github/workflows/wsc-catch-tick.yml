@@ -1,0 +1,31 @@
+name: WSC catch draft auto-finalize
+
+on:
+  schedule:
+    # GitHub scheduled workflows run on the default branch only.
+    # Runs approximately every 15 minutes (may be delayed by GitHub).
+    - cron: "7,22,37,52 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wsc-catch-tick
+  cancel-in-progress: false
+
+jobs:
+  finalize-expired-drafts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Trigger WSC expired-draft processing
+        env:
+          TICK_URL: https://saika.rss7.net/line-api/tick.php
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error \
+            --connect-timeout 10 --max-time 35 \
+            --retry 2 --retry-delay 5 \
+            --output /dev/null \
+            "$TICK_URL"
