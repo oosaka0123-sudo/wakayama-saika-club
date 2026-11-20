@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>釣果情報</title>
+<meta name="description" content="和歌山雑賀クラブの会員がLINEから投稿した最新の船釣り釣果をご覧いただけます。">
+<meta name="theme-color" content="#0c1720">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/premium.css?v=20261119-nav1">
+<link rel="stylesheet" href="../css/catch.css">
+<script src="../js/main.js?v=20261119-share1" defer></script>
+<script src="../js/footer.js?v=20261119-nav1" defer></script>
+<script src="../js/catch-config.js" defer></script>
+<script src="../js/catch.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">本文へ移動</a>
+<header class="site-header">
+  <div class="in">
+    <a class="brand" href="../" aria-label="和歌山雑賀クラブ トップへ">
+      <img src="../assets/logo-wsc.svg" width="92" height="56" alt="WSC 船のロゴ">
+      <div><small>WAKAYAMA SAIKA CLUB</small><span>和歌山雑賀クラブ</span></div>
+    </a>
+    <nav class="gnav" aria-label="メインメニュー">
+      <ul>
+        <li><a href="../about/"><small>ABOUT</small><span>クラブ紹介</span></a></li>
+        <li><a href="../#fish"><small>FISHING</small><span>対象魚</span></a></li>
+        <li><a href="../#events"><small>EVENTS</small><span>年間行事</span></a></li>
+        <li><a href="../gallery/"><small>GALLERY</small><span>フォトギャラリー</span></a></li>
+        <li><a href="../contact/"><small>CONTACT</small><span>お問い合わせ</span></a></li>
+        <li><a href="../join/" class="cta"><small>JOIN US</small><span>会員募集</span></a></li>
+      </ul>
+    </nav>
+    <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="drawer" aria-label="メニューを開く"><span class="bars"></span></button>
+  </div>
+</header>
+<nav class="drawer" id="drawer" aria-label="モバイルメニュー" inert>
+  <ul>
+    <li><a href="../about/"><small>ABOUT</small><span>クラブ紹介</span></a></li>
+    <li><a href="../#fish"><small>FISHING</small><span>対象魚</span></a></li>
+    <li><a href="../#events"><small>EVENTS</small><span>年間行事</span></a></li>
+    <li><a href="../gallery/"><small>GALLERY</small><span>フォトギャラリー</span></a></li>
+    <li><a href="../contact/"><small>CONTACT</small><span>お問い合わせ</span></a></li>
+    <li><a href="../join/" class="cta"><small>JOIN US</small><span>会員募集</span></a></li>
+  </ul>
+</nav>
+<main id="main">
+  <section class="catch-hero">
+    <div class="wrap">
+      <p class="catch-en">WAKAYAMA SAIKA CLUB / FISHING REPORT</p>
+      <h1>釣果情報</h1>
+      <p>和歌山の海から届いた、会員たちの釣果写真。</p>
+      <p class="catch-note">投稿者名・コメントは任意です。釣果は専用LINEから自動掲載されます。</p>
+    </div>
+  </section>
+  <section class="catch-body" aria-labelledby="catch-list-heading">
+    <div class="wrap">
+      <p class="sec-label">FISHING REPORT</p>
+      <h2 id="catch-list-heading">海からの釣果だより</h2>
+      <p id="catch-status" role="status" aria-live="polite">釣果を読み込んでいます。</p>
+      <div class="catch-grid" id="catch-grid" aria-label="最新釣果一覧"></div>
+      <div class="catch-actions"><a class="btn" href="../">HOME <span>トップページへ戻る</span></a></div>
+    </div>
+  </section>
+</main>
+<footer data-wsc-footer aria-label="和歌山雑賀クラブ共通フッター"></footer>
+</body>
+</html>

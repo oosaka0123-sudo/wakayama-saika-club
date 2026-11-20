@@ -1,0 +1,6 @@
+# Applies only when this site copy is served by Lolipop, not GitHub Pages.
+# Mirror pages must not compete with the official GitHub Pages URLs.
+Options -Indexes
+<IfModule mod_headers.c>
+  Header always set X-Robots-Tag "noindex, nofollow"
+</IfModule>
