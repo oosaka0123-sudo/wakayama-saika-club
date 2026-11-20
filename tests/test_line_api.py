@@ -223,7 +223,7 @@ try:
     waits = [ts for _, ts in replies() if any("続けて、釣果の写真を送ってください" in t for t in ts)]
     check(len(waits) == 1, "写真より先の文章には「写真を送って」と案内（既存の文章先送りも可）")
     got = [ts for _, ts in replies() if any("写真を受け取りました。\nコメントがあれば入力してください。\nなければ下の『送信する』を押してください。" == t for t in ts)]
-    check(len(got) == 3, "写真を受け取るたびに毎回、コメント案内と送信ボタンを返す")
+    check(len(got) == 2, "写真の受け取り案内は下書きごとに1枚目だけ（AとBで1回ずつ、2枚目は重複しない）")
     quick_reply_count = 0
     with open(httplog, encoding="utf-8") as logfile:
         for line in logfile:
@@ -235,7 +235,7 @@ try:
                     for item in msg.get("quickReply", {}).get("items", [])
                 ) for msg in payload["messages"]):
                     quick_reply_count += 1
-    check(quick_reply_count == 3, "写真の各返信に送信するボタンが付く")
+    check(quick_reply_count == 2, "写真の受け取り案内に送信するボタンが付く")
 
     webhook([ev(UA, "text", text="送信")])
     webhook([ev(UA, "text", text="送信")])
@@ -431,8 +431,9 @@ try:
     check(last() == [PHOTO_MSG] and last_quick() == ["送信する"], "写真を送るとコメント案内と「送信する」ボタン")
     d = new_posts()[0]
     check(d["status"] == "draft" and d["author"] == "山田", "名前は投稿者欄に引き継ぐ（まだ非公開）")
+    n_rep = len(replies())
     webhook([ev(UD, "image", mid="1002")])
-    check(last() == [PHOTO_MSG] and last_quick() == ["送信する"], "2枚目の写真でもボタンが復活する")
+    check(len(replies()) == n_rep and len(new_posts()[0]["photos"]) == 2, "2枚目の写真では同じ受け取り案内を重複して返さない（写真は追加される）")
     webhook([ev(UD, "text", text="朝からマダイが釣れました")])
     p = new_posts()[0]
     check(last() == ["ありがとうございます。釣果情報に掲載しました。\n" + URL], "コメントを送ると自動で掲載しお礼とリンクを返す（ボタン不要）")
@@ -507,6 +508,76 @@ try:
     req("tick.php", headers={"X-WSC-Tick-Token": newtok})
     check(did0 not in store()["posts"] and not store()["drafts"], "写真なしの放置下書きは公開せず破棄")
 
+    # 7) 回帰：以前「てすと」で投稿者名が残った写真なしの下書きがある会員が、新しい投稿で
+    #    「山本」→写真2枚→「マダイですと」と送ると、投稿者は山本・コメントはマダイですとの1件になる
+    UK = "U" + "9" * 32
+    webhook([ev(UK, "text", text="Saika1981")])
+    kk = hmac.new(SECRET.encode(), ("user:" + UK).encode(), hashlib.sha256).hexdigest()[:24]
+    s = store()
+    check(kk in s["members"], "回帰テスト用の会員を登録")
+    stale_id = "a1" * 10
+    now_iso = time.strftime("%Y-%m-%dT%H:%M:%S+09:00")
+    s["members"][kk]["name"] = "てすと"
+    s["posts"][stale_id] = {"id": stale_id, "status": "draft", "user_key": kk, "_line_user": UK, "created_at": now_iso, "updated_at": now_iso,
+                            "last_activity": int(time.time()) - 600, "texts": ["投稿者：てすと"], "photos": [], "fish": "", "caught_on": "",
+                            "comment": "", "author": "てすと", "notice_sent": {}}
+    if isinstance(s["drafts"], list): s["drafts"] = {}
+    s["drafts"][kk] = stale_id
+    json.dump(s, open(path, "w", encoding="utf-8"), ensure_ascii=False)
+    before_ids = set(store()["posts"]) - {stale_id}
+    webhook([ev(UK, "text", text="山本")])
+    check(last() == ["山本さん、こんにちは。\n釣果の写真を送ってください（1〜5枚）。"], "古い下書きがあっても最初の「山本」は名前として受け取る")
+    webhook([ev(UK, "image", mid="1001")])
+    webhook([ev(UK, "image", mid="1002")])
+    webhook([ev(UK, "text", text="マダイですと")])
+    r = [p for i, p in store()["posts"].items() if i not in before_ids]
+    check(len(r) == 1 and r[0]["status"] == "published" and len(r[0]["photos"]) == 2 and kk not in store()["drafts"],
+          "名前→写真2枚→コメントは1件にまとまって掲載")
+    check(r[0]["author"] == "山本" and r[0]["comment"] == "マダイですと",
+          f"投稿者は山本（古いてすとを上書き）、コメントに名前が混ざらない: {r[0]['author']!r} / {r[0]['comment']!r}")
+
+    # 8) 回帰（実機）：釣果を掲載した後に漢字1文字の「堺」、続けて「山本」を送ると、どちらも名前として挨拶する。
+    #    その後に写真2枚を続けて送ると受け取り案内は1回だけ。「送信」で山本の1件として掲載される。
+    check(kk not in store()["drafts"] and "掲載しました" in last()[0], "前の釣果はコメントで掲載済み")
+    before_ids = set(store()["posts"])
+    webhook([ev(UK, "text", text="堺")])
+    check(last() == ["堺さん、こんにちは。\n釣果の写真を送ってください（1〜5枚）。"] and set(store()["posts"]) == before_ids,
+          f"漢字1文字の名字「堺」も名前として受け取る（投稿は作らない）: {last()!r}")
+    webhook([ev(UK, "text", text="山本")])
+    check(last() == ["山本さん、こんにちは。\n釣果の写真を送ってください（1〜5枚）。"] and set(store()["posts"]) == before_ids,
+          f"続けて「山本」も名前として受け取り、文章扱いにしない: {last()!r}")
+    n_rep = len(replies())
+    webhook([ev(UK, "image", mid="1001"), ev(UK, "image", mid="1002")])
+    acks = [t for _, ts in replies()[n_rep:] for t in ts if t == PHOTO_MSG]
+    check(len(acks) == 1 and len(replies()) == n_rep + 1, f"写真2枚を続けて送っても受け取り案内は1回だけ: {replies()[n_rep:]!r}")
+    webhook([ev(UK, "text", text="送信")])
+    r = [p for i, p in store()["posts"].items() if i not in before_ids]
+    check(len(r) == 1 and r[0]["status"] == "published" and len(r[0]["photos"]) == 2 and r[0]["author"] == "山本" and r[0]["comment"] == ""
+          and "掲載しました" in last()[0], f"「送信」で山本の写真2枚が1件として掲載（堺は残らず、コメントにも入らない）: {r and (r[0]['author'], r[0]['comment'])!r}")
+
+    # 写真のない下書きに「堺」が文章として残っていても、「山本」で置き換わりコメントにならない
+    s = store()
+    stale_id = "b2" * 10
+    s["posts"][stale_id] = {"id": stale_id, "status": "draft", "user_key": kk, "_line_user": UK, "created_at": now_iso, "updated_at": now_iso,
+                            "last_activity": int(time.time()) - 60, "texts": ["堺"], "photos": [], "fish": "", "caught_on": "",
+                            "comment": "", "author": "", "notice_sent": {}}
+    if isinstance(s["drafts"], list): s["drafts"] = {}
+    s["drafts"][kk] = stale_id
+    s.get("rate", {}).pop(kk, None)   # 1分間の操作上限にかからないようにする
+    json.dump(s, open(path, "w", encoding="utf-8"), ensure_ascii=False)
+    webhook([ev(UK, "text", text="山本")])
+    check(last() == ["山本さん、こんにちは。\n釣果の写真を送ってください（1〜5枚）。"], "写真のない下書きがあっても「山本」は名前")
+    webhook([ev(UK, "image", mid="1001"), ev(UK, "image", mid="1002")])
+    webhook([ev(UK, "text", text="良型でした")])
+    p = store()["posts"][stale_id]
+    check(p["status"] == "published" and p["author"] == "山本" and p["comment"] == "良型でした" and len(p["photos"]) == 2 and "掲載しました" in last()[0],
+          f"下書きの古い名前「堺」は置き換え、コメントは良型でしたのみ: {p['author']!r} / {p['comment']!r}")
+
+    # 魚・返事などの1文字は名前にしない
+    for text in ("鯛", "済", "あ", "A"):
+        webhook([ev(UK, "text", text=text)])
+        check("さん、こんにちは" not in last()[0], f"1文字の非名前は名前にしない: {text}")
+        webhook([ev(UK, "text", text="取消")])
     # 7) 追加の新フロー：コメント分割・遅れた写真・取消・重複・並行会員
     UK, UL, UM = "U" + "3" * 32, "U" + "4" * 32, "U" + "5" * 32
     for u in (UK, UL, UM):

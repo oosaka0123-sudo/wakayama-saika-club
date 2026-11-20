@@ -193,9 +193,15 @@ function wsc_parse_name_message(string $text): ?string
     $t = trim(preg_replace('/(?:さん|さま|様|くん|君|ちゃん)$/u', '', $t) ?? '');
     if ($t === '' || preg_match('/[<>&"\'\\\\]/u', $t)) return null;
     if ($labeled) return wsc_clip($t, 30) ?: null;
-    if (mb_strlen($t) < 2 || mb_strlen($t) > 8) return null;
+    // 「堺」「辻」のような漢字1文字の名字は名前として受け付ける（魚・返事などの1文字は除く）。
+    if (mb_strlen($t) === 1) {
+        if (!preg_match('/^\p{Han}$/u', $t)) return null;
+        $one = '鯛鯵鰺鯖鰯鰤鱸鮃鰈鯒鱚鯊鮎鮭鱒鰻鯉鮪鰹鰆鮫蛸烏蟹魚釣済了可否是無有雨晴曇風波潮海船竿糸餌朝昼夕夜今';
+        return mb_strpos($one, $t) === false ? $t : null;
+    }
+    if (mb_strlen($t) > 8) return null;
     if (!preg_match('/^[\p{Han}\p{Hiragana}\p{Katakana}ー々A-Za-z]+(?: [\p{Han}\p{Hiragana}\p{Katakana}ー々A-Za-z]+)?$/u', $t)) return null;
-    if (preg_match('/匹|尾|本|枚|杯|キロ|釣|魚|大漁|不漁|ありがとう|お疲れ|です|ます|でした|ました|ください|よろしく|すみません|おはよう|こんにち|こんばん/u', $t)) return null;
+    if (preg_match('/釣|魚|大漁|不漁|ありがとう|お疲れ|です|ます|でした|ました|ください|よろしく|すみません|おはよう|こんにち|こんばん/u', $t)) return null;
     $stop = ['はい', 'いいえ', 'ok', 'りょうかい', '了解', 'なし', 'ボウズ', '坊主', 'マダイ', 'タイ', 'クロダイ', 'チヌ', 'アジ', 'サバ', 'イワシ', 'ブリ',
         'ハマチ', 'メジロ', 'カンパチ', 'ヒラメ', 'スズキ', 'グレ', 'メバル', 'カサゴ', 'ガシラ', 'キス', 'ハゼ', 'イカ', 'アオリイカ', 'タコ', 'サゴシ', 'サワラ',
         'タチウオ', 'ヒラマサ', 'シーバス', 'サヨリ', 'カワハギ', 'ウマヅラ', 'アコウ', 'キジハタ', 'ハタ', 'ヤズ', 'ワラサ', 'イサキ', 'アマダイ', 'ガッシー'];

@@ -32,7 +32,7 @@ function wsc_msg_help(): array
     )];
 }
 
-/** 写真を受け取るたびに毎回返す（LINEのクイック返信は次の発言で消えるため、ボタンを付け直す）。 */
+/** 下書きの1枚目の写真を受け取ったときに返す（続けて送られた2枚目以降では繰り返さない）。 */
 function wsc_msg_photo_received(): array
 {
     return [wsc_text_message(
