@@ -199,7 +199,7 @@ function wsc_handle_event(array $event): void
                 $prev['updated_at'] = wsc_now();
                 unset($prev);
                 $replies = array_merge($replies, [wsc_text_message(
-                    "先ほどの釣果情報にコメントを追加しました。\\nホームページで確認できます。"
+                    "先ほどの釣果情報にコメントを追加しました。\nホームページで確認できます。"
                 )]);
                 return;
             }
