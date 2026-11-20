@@ -1,0 +1,67 @@
+/* WSC location & marina access — scoped to protect existing pages */
+.location-hero{position:relative;isolation:isolate;margin-top:var(--hh);min-height:clamp(620px,84svh,860px);display:flex;align-items:center;overflow:hidden;color:#fff;background:#071721}
+.location-hero-media{position:absolute;inset:0;z-index:-3;background:#08202e url('../assets/photos/21992.jpg') center 42%/cover no-repeat}
+.location-drone{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .7s ease}
+.location-drone.is-ready{opacity:1}
+.location-hero-overlay{position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,rgba(3,15,24,.90) 0%,rgba(3,15,24,.62) 52%,rgba(3,15,24,.32) 100%),linear-gradient(0deg,rgba(2,13,21,.64),transparent 45%)}
+.location-hero-content{width:100%;position:relative;z-index:2;padding-top:80px;padding-bottom:110px}
+.location-eyebrow{font:800 12px/1.4 Arial,sans-serif;letter-spacing:.16em;color:var(--orange);margin:0 0 25px}
+.location-display{font:900 clamp(56px,10vw,130px)/.89 Impact,'Arial Narrow',Arial,sans-serif;letter-spacing:-.012em;margin:0 0 30px;text-shadow:0 4px 24px #0008}
+.location-display em{font-style:normal;color:var(--orange)}
+.location-hero h1{font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP','Yu Gothic',Meiryo,sans-serif;font-weight:900;font-size:clamp(25px,3.1vw,39px);line-height:1.4;margin:0 0 18px;color:#fff;letter-spacing:.01em;text-shadow:0 2px 12px #0009}
+.location-lead{font-size:clamp(14px,1.7vw,19px);line-height:1.9;max-width:650px;font-weight:700;margin:0 0 32px;color:#f2f7f9;text-shadow:0 2px 12px #0009}
+.location-hero-link{display:inline-flex;align-items:center;gap:12px;text-decoration:none;font-weight:900;font-size:12px;letter-spacing:.08em;padding:16px 22px;border:1px solid #fff9;background:#07182472;color:#fff;min-height:52px}
+.location-hero-link span{font-size:12px;letter-spacing:0}
+.location-hero-link:hover,.location-hero-link:focus-visible{border-color:var(--orange);background:#071824}
+.location-hero-caption{position:absolute;left:max(20px,calc((100vw - var(--max))/2 + 20px));bottom:16px;z-index:2;color:#e3e6e7;font-size:11px;line-height:1.5;text-shadow:0 1px 6px #000;max-width:calc(100% - 40px)}
+.location-section{padding:80px 0}
+.location-section .location-heading{font-size:clamp(26px,3.3vw,42px);line-height:1.42;letter-spacing:.01em;margin:0 0 23px}
+.location-section-lead{line-height:1.9;margin:-7px 0 30px;max-width:770px}
+.location-area-card{display:grid;grid-template-columns:minmax(0,2fr) minmax(220px,1fr);gap:32px;align-items:center;background:#fff;padding:38px;border-top:4px solid var(--orange);box-shadow:0 16px 40px #0617220c}
+.location-area-card h3{font-size:clamp(24px,2.7vw,36px);line-height:1.35;margin:5px 0 20px}
+.location-area-card p{line-height:1.9}
+.location-area-kicker{font:800 12px/1.5 Arial,sans-serif;letter-spacing:.15em;color:#97500c}
+.location-note{color:#52636e;font-size:13px}
+.location-area-mark{min-height:200px;background:linear-gradient(135deg,#0e3346,#071923);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--orange)}
+.location-area-mark span{font:900 clamp(56px,6vw,88px)/1 Impact,Arial,sans-serif;letter-spacing:.04em}
+.location-area-mark small{font:800 11px/1.5 Arial,sans-serif;letter-spacing:.25em;color:#fff}
+.location-marina{background:#fff;border:1px solid #dbe3e6;box-shadow:0 12px 30px #0718250c;overflow:hidden}
+.location-marina-head{position:relative;padding:35px 38px 30px}
+.location-number{float:right;font:900 26px/1 Arial,sans-serif;color:#b85a15;margin-left:14px}
+.location-number span{display:block;font-size:9px;letter-spacing:.14em;color:#526671;margin-top:8px}
+.location-marina-eyebrow{font:800 12px/1.5 Arial,sans-serif;letter-spacing:.14em;color:#a24f0c;margin:0 0 12px}
+.location-marina h3{font-size:clamp(21px,2.5vw,32px);line-height:1.45;margin:0 0 8px}
+.location-marina-subtitle{font-size:13px;color:#64727a;margin:0 0 18px}
+.location-marina-address{font-size:clamp(15px,1.8vw,19px);font-weight:800;line-height:1.8;margin:0 0 16px}
+.location-marina-address span{font-size:26px;color:#b65b1e;vertical-align:middle;margin-right:5px}
+.location-marina-notes{max-width:760px;color:#3e525c;line-height:1.9;margin:0}
+.location-marina-map{display:block;border:0;width:100%;height:clamp(340px,46vw,520px);background:#e9eff2}
+.location-marina-actions{display:flex;align-items:center;gap:22px;flex-wrap:wrap;padding:27px 38px 18px}
+.location-marina-actions .btn{min-width:225px}
+.location-map-link{display:inline-flex;align-items:center;gap:10px;min-height:44px;font-size:14px;font-weight:800;color:#133a4a;text-underline-offset:4px}
+.location-map-link:hover{color:#a6500a}
+.location-map-notice{font-size:12px;line-height:1.8;color:#566873;margin:0;padding:0 38px 28px}
+.location-more-note{font-size:13px;color:#5c6c76;margin:22px 0 0}
+.location-bottom{background:linear-gradient(110deg,#091821,#123d4c);color:#fff}
+.location-bottom .location-heading{color:#fff}
+.location-bottom p{max-width:700px;line-height:1.9}
+.location-bottom .btn{margin-top:15px}
+@media(max-width:720px){
+ .location-hero{min-height:590px}
+ .location-hero-content{padding-top:70px;padding-bottom:85px}
+ .location-display{font-size:clamp(53px,13vw,82px);margin-bottom:22px}
+ .location-hero h1{font-size:clamp(22px,5.2vw,30px)}
+ .location-lead{font-size:14px;line-height:1.85}
+ .location-lead br{display:none}
+ .location-hero-overlay{background:linear-gradient(0deg,rgba(3,15,24,.88),rgba(3,15,24,.55) 70%,rgba(3,15,24,.56))}
+ .location-section{padding:54px 0}
+ .location-area-card{grid-template-columns:1fr;gap:20px;padding:25px}
+ .location-area-mark{min-height:125px}
+ .location-marina-head{padding:26px 23px}
+ .location-marina-actions{padding:23px;gap:12px}
+ .location-marina-actions .btn{width:100%}
+ .location-marina-map{height:340px}
+ .location-map-notice{padding:0 23px 23px}
+}
+@media(max-width:359px){.location-display{font-size:49px;letter-spacing:-.025em}.location-hero-link{padding:14px;gap:7px}.location-hero-link span{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.location-drone{transition:none}}
