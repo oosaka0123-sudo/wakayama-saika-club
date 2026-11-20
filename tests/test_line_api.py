@@ -152,14 +152,14 @@ try:
 
     # --- 友だち追加 ---
     webhook([ev(UA, "follow")])
-    check(any("ようこそ" in t and "登録 合言葉" in t for _, ts in replies() for t in ts), "友だち追加で登録方法を案内")
+    check(any("ようこそ" in t and "合言葉を、そのまま" in t for _, ts in replies() for t in ts), "友だち追加で登録方法を案内")
 
     def admin_csrf():
         st, body, _ = req("admin/")
         return re.search(rb'name="csrf" value="([0-9a-f]+)"', body).group(1).decode(), body
 
     # --- 会員登録前は投稿できない（友だち追加だけで公開されない） ---
-    webhook([ev(UA, "text", text="登録 umihiko")])
+    webhook([ev(UA, "text", text="umihiko")])
     check(any("準備中" in t for _, ts in replies() for t in ts) and not store()["members"], "合言葉未設定のあいだは誰も登録できない")
     webhook([ev(UC, "image", mid="1001"), ev(UC, "text", text="荒らし"), ev(UC, "text", text="送信")])
     s = store()
@@ -184,16 +184,16 @@ try:
     check("Saika1981" not in open(os.path.join(app, "private", "data", "store.json"), encoding="utf-8").read(), "合言葉の平文は保存しない")
 
     # --- 登録（誤り回数制限つき） ---
-    webhook([ev(UC, "text", text="登録 wrong")])
+    webhook([ev(UC, "text", text="wrong")])
     check(not store()["members"] and any("合言葉が違います" in t for _, ts in replies() for t in ts), "誤った合言葉は登録しない")
     for _ in range(5):
-        webhook([ev(UC, "text", text="登録 wrong")])
-    webhook([ev(UC, "text", text="登録 Saika1981")])
+        webhook([ev(UC, "text", text="wrong")])
+    webhook([ev(UC, "text", text="Saika1981")])
     check(not store()["members"] and any("本日は登録できません" in t for _, ts in replies() for t in ts), "失敗5回で当日は正しい合言葉でも登録不可")
-    webhook([ev(UA, "text", text="登録　ＳＡＩＫＡ１９８１")])
+    webhook([ev(UA, "text", text="ＳＡＩＫＡ１９８１")])
     webhook([ev(UB, "text", text="登録：saika1981 山田")])
     s = store()
-    check(len(s["members"]) == 2, "全角・大文字小文字の違いを吸収して登録")
+    check(len(s["members"]) == 2, "合言葉だけで登録でき、旧方式も使える")
     check(any(m.get("name") == "山田" for m in s["members"].values()), "登録時に任意の名前を記録")
     check(UA not in json.dumps(s["members"]) and UB not in json.dumps(s["members"]), "会員一覧にLINE IDを保存しない")
 
