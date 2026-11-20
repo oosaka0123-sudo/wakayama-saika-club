@@ -1,0 +1,16 @@
+# 和歌山雑賀クラブ 釣果投稿API
+Options -Indexes
+<IfModule mod_headers.c>
+  Header always set X-Robots-Tag "noindex, nofollow"
+  Header always set X-Content-Type-Options "nosniff"
+</IfModule>
+# PHPの入口以外（.json / .bak / .log / .key / .md など）は配信しない
+<FilesMatch "\.(json|bak|log|key|md|txt|tmp|ps1|cjs|sh|ini)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>

@@ -1,0 +1,7 @@
+# GitHub Pages（Jekyll）設定：サーバー用PHP・テスト・メモは公開サイトに出さない
+exclude:
+  - line-api
+  - tests
+  - notes
+  - tools
+  - README-catch.md

@@ -1,0 +1,7 @@
+# 釣果API：サーバー上で生成される秘密情報・投稿データはGit管理しない
+line-api/private/*
+!line-api/private/.htaccess
+!line-api/private/index.php
+!line-api/private/README.md
+dist/
+__pycache__/

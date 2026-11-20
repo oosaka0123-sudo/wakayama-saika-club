@@ -1,0 +1,43 @@
+/* 釣果情報 — フォトギャラリー（gallery.css）の配色・余白・拡大表示を継承 */
+.catch-hero{margin-top:var(--hh);position:relative;isolation:isolate;overflow:hidden;background:#07141e;color:#fff;padding:clamp(80px,10vw,135px) 0 clamp(40px,5vw,62px)}
+.catch-hero:after{content:"";position:absolute;inset:0;z-index:-2;background:url('../assets/photos/21988.jpg') 50% 45%/cover no-repeat;filter:saturate(.85)}
+.catch-hero:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(4,15,24,.9) 0%,rgba(4,15,24,.62) 55%,rgba(4,15,24,.35) 100%),linear-gradient(0deg,rgba(3,12,19,.8),transparent 70%)}
+.catch-title{margin:0 0 18px;font-weight:900;font-size:clamp(28px,4vw,42px);letter-spacing:.05em;line-height:1.3}
+.catch-title-en{display:block;font:900 clamp(54px,10vw,118px)/.9 Impact,"Arial Narrow",Arial,sans-serif;letter-spacing:0;margin-bottom:16px}
+.catch-title-en em{font-style:normal;color:var(--orange)}
+.catch-intro{font-weight:600;font-size:clamp(14px,1.8vw,17px);line-height:1.9;max-width:34em;margin:0}
+.catch-content{background:#f0f3f3;padding:clamp(56px,8vw,100px) 0}
+.catch-status{font-size:14px;color:#536570;margin:0 0 18px}
+.catch-status:empty{display:none}
+.catch-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:clamp(14px,2vw,26px)}
+.catch-card{background:#fff;box-shadow:0 7px 24px #0c172010;display:flex;flex-direction:column;min-width:0}
+.catch-media{position:relative;background:#0c1720}
+.catch-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;aspect-ratio:4/3}
+.catch-track::-webkit-scrollbar{display:none}
+.catch-shot{flex:0 0 100%;scroll-snap-align:start;border:0;padding:0;margin:0;background:#0c1720;cursor:zoom-in;display:block;position:relative}
+/* 縦長・横長どちらの写真も切らずに見せる（背景をぼかして余白を埋める） */
+.catch-shot .bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(18px) brightness(.55);transform:scale(1.15)}
+.catch-shot img{position:relative;width:100%;height:100%;object-fit:contain;display:block}
+.catch-nav{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:46px;border:1px solid #ffffff66;background:#08131dbb;color:#fff;font:300 26px/1 Arial,sans-serif;cursor:pointer;display:grid;place-items:center}
+.catch-nav.prev{left:6px}.catch-nav.next{right:6px}
+.catch-nav[disabled]{opacity:.25;cursor:default}
+.catch-count{position:absolute;right:8px;bottom:8px;background:#0c1720da;color:#fff;font:800 11px/1 Arial,sans-serif;letter-spacing:.1em;padding:6px 8px}
+.catch-zoom{position:absolute;left:8px;bottom:8px;width:28px;height:28px;display:grid;place-items:center;background:#0c1720da;color:#fff;font:300 20px Arial,sans-serif;pointer-events:none}
+.catch-noimg{aspect-ratio:4/3;display:grid;place-items:center;background:linear-gradient(135deg,#0c1720,#183447);color:#fff}
+.catch-noimg img{width:84px;height:auto;opacity:.85}
+.catch-body{padding:16px 18px 20px;display:flex;flex-direction:column;gap:6px}
+.catch-date{font:800 11px/1.5 Arial,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;letter-spacing:.08em;color:#be550d}
+.catch-fish{font-size:clamp(17px,1.8vw,20px);font-weight:900;line-height:1.45;margin:0;overflow-wrap:anywhere}
+.catch-comment{font-size:15px;line-height:1.85;margin:0;white-space:pre-line;overflow-wrap:anywhere}
+.catch-author{font-size:13px;color:#536570;margin:4px 0 0}
+.catch-empty{text-align:center;background:#fff;padding:clamp(40px,6vw,64px) 20px;box-shadow:0 7px 24px #0c172010}
+.catch-empty img{width:92px;height:auto;margin:0 auto 14px;display:block;filter:drop-shadow(0 2px 0 #0002)}
+.catch-empty-title{font-weight:900;font-size:clamp(18px,2.2vw,22px);margin:0 0 8px}
+.catch-empty p{margin:0;color:#536570}
+.catch-howto{margin-top:clamp(40px,6vw,64px);background:#0c1720;color:#fff;padding:clamp(22px,3vw,34px);border-left:4px solid var(--orange)}
+.catch-howto h3{margin:0 0 12px;font-size:clamp(17px,2vw,21px)}
+.catch-howto ol{margin:0;padding-left:1.4em;line-height:1.9;font-size:15px}
+.catch-line{margin:18px 0 0}
+.catch-line .btn{background:#06c755;color:#fff;border-color:#06c755}
+@media(max-width:640px){.catch-list{grid-template-columns:1fr}.catch-body{padding:13px 14px 16px}}
+@media(prefers-reduced-motion:reduce){.catch-track{scroll-behavior:auto}}
