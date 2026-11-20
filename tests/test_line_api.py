@@ -48,6 +48,8 @@ for i in range(3001, 3007):
 open(os.path.join(fixtures, "9999.jpg"), "wb").write(b"<?php echo 'x'; ?>" + b"0" * 200)  # 偽画像
 key = "k" * 40
 open(os.path.join(app, "private", "setup.key"), "w").write(key)
+TICK = "t" * 48
+open(os.path.join(app, "private", "tick.key"), "w").write(hashlib.sha256(TICK.encode()).hexdigest())
 httplog = os.path.join(tmp, "http.log")
 env = dict(os.environ, WSC_TEST_HTTP_STUB="1", WSC_TEST_HTTP_LOG=httplog, WSC_TEST_FIXTURES=fixtures)
 port = free_port()
@@ -311,10 +313,14 @@ try:
     webhook([ev(UB, "image", mid="1001")])
     did = list(store()["drafts"].values())[0]
     age(did, 3540)
-    req("tick.php")
+    req("tick.php", headers={"X-WSC-Tick-Token": TICK})
     check(store()["posts"][did]["status"] == "draft", "59分では自動確定しない")
     age(did, 120)
-    st, body, _ = req("tick.php")
+    for hdrs in ({}, {"X-WSC-Tick-Token": "wrong"}):
+        st, body, _ = req("tick.php", headers=hdrs)
+        check(st == 403 and store()["posts"][did]["status"] == "draft", "tick.phpはトークンなし・誤りでは動かない(403)")
+        if os.path.exists(stamp): os.utime(stamp, (0, 0))
+    st, body, _ = req("tick.php", headers={"X-WSC-Tick-Token": TICK})
     check(st == 200 and json.loads(body) == {"ok": True}, "tick.phpは情報を返さない")
     check(store()["posts"][did]["status"] == "published" and not store()["drafts"], "Webhookなしでも1時間後に自動確定→掲載")
     check(did in [p["id"] for p in json.loads(req("feed.php")[1])["posts"]], "自動確定した投稿がホームページ用APIに出る")
