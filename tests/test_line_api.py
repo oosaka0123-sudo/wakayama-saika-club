@@ -239,6 +239,14 @@ try:
     pb = store()["posts"][pb[0]["id"]]
     check(pb["status"] == "published" and pb["author"] == "" and pb["comment"] == "", "投稿者名なし・写真のみでも自動掲載")
 
+    # --- 写真だけ先に送信後、同じ会員のコメントを直近の写真に追記 ---
+    st, _, _ = webhook([ev(UB, "text", text="夕方は潮が良かったです")])
+    check(st == 200, "送信後のコメントも受理")
+    updated = store()["posts"][pb["id"]]
+    check(updated["comment"] == "夕方は潮が良かったです", "直近の写真投稿にコメントが追記される")
+    check(len(store()["posts"]) == 2 and not store()["drafts"], "コメントは新しい投稿や下書きにならない")
+    check(any("コメントを追加しました" in t for _, ts in replies() for t in ts), "追記完了をLINE返信")
+
     st, body, hdr = req("feed.php", headers={"Origin": "https://oosaka0123-sudo.github.io"})
     feed = json.loads(body)
     check(len(feed["posts"]) == 2, "送信した2件が公開APIに出る")
@@ -250,7 +258,7 @@ try:
     fa = [p for p in feed["posts"] if p["id"] == pa["id"]][0]
     fb = [p for p in feed["posts"] if p["id"] == pb["id"]][0]
     check(len(fa["photos"]) == 2 and fa["author"] == "山田", "複数写真と投稿者名")
-    check("author" not in fb and "comment" not in fb and "fish" not in fb, "未入力項目は出力しない")
+    check("author" not in fb and fb.get("comment") == "夕方は潮が良かったです" and "fish" not in fb, "追記コメントは公開APIに反映し、未入力項目は出力しない")
     check(feed["posts"][0]["id"] == pb["id"], "新しい釣果が先頭")
     st, img, hdr = req(fa["photos"][0]["l"].replace(f"http://127.0.0.1:{port}/line-api/", ""))
     check(st == 200 and hdr.get("Content-Type") == "image/jpeg", "公開写真を配信")
