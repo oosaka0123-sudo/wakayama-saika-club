@@ -332,6 +332,20 @@ try:
     req("feed.php")
     check(store()["posts"][did2]["status"] == "published", "公開API表示時にも自動確定（予備）")
 
+    # --- 管理画面でトークン再発行：旧トークンは無効、新トークンは画面に1回だけ表示 ---
+    csrf, _ = admin_csrf()
+    st, body, _ = req("admin/", {"csrf": csrf, "action": "tick_token"})
+    m = re.search(rb'<code[^>]*>([0-9a-f]{64})</code>', body)
+    check(m is not None, "管理画面でトークンを発行し1回表示")
+    newtok = m.group(1).decode()
+    st, body, _ = req("admin/?tab=settings")
+    check(newtok.encode() not in body, "トークンは再表示されない")
+    check(newtok not in open(os.path.join(app, "private", "tick.key")).read(), "サーバーにトークン平文を保存しない")
+    if os.path.exists(stamp): os.utime(stamp, (0, 0))
+    check(req("tick.php", headers={"X-WSC-Tick-Token": TICK})[0] == 403, "再発行後は旧トークン無効")
+    if os.path.exists(stamp): os.utime(stamp, (0, 0))
+    check(req("tick.php", headers={"X-WSC-Tick-Token": newtok})[0] == 200, "新トークンで実行可")
+
     # --- 会員停止・自動掲載停止・連続投稿対策 ---
     keyB = [k for k, m in store()["members"].items() if m.get("name") == "山田"][0]
     csrf, _ = admin_csrf()

@@ -41,6 +41,15 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         wsc_state(function (array &$s) use ($p1) { $s['settings']['passphrase_hash'] = password_hash(wsc_normalize_passphrase($p1), PASSWORD_DEFAULT); $s['settings']['passphrase_updated'] = wsc_now(); });
         wsc_redirect('tab=settings', '合言葉を設定しました。会員に案内してください（登録済みの会員はそのまま投稿できます）。');
     }
+    if ($action === 'tick_token') {
+        // 定期実行（GitHub Actions）用トークンを発行。サーバーにはハッシュのみ保存し、平文はこの画面で1回だけ表示。
+        $token = bin2hex(random_bytes(32));
+        $file = wsc_path('tick.key');
+        if (file_put_contents($file, hash('sha256', $token) . "\n", LOCK_EX) === false) wsc_redirect('tab=settings', 'トークンを保存できませんでした。');
+        @chmod($file, 0600);
+        $_SESSION['wsc_tick_token_once'] = $token;
+        wsc_redirect('tab=settings', '定期実行トークンを発行しました。下の値をGitHubのSecret「WSC_TICK_TOKEN」に登録してください（この表示は1回だけです）。');
+    }
     if ($action === 'auto_publish') {
         $on = ($_POST['value'] ?? '') === '1';
         wsc_state(function (array &$s) use ($on) { $s['settings']['auto_publish'] = $on; });
@@ -201,6 +210,14 @@ if ($tab === 'settings') {
     echo '<input type="hidden" name="csrf" value="' . wsc_h($csrf) . '"><input type="hidden" name="action" value="set_passphrase">';
     echo '<div class="field"><label for="pp">新しい合言葉（空白なし・4文字以上）</label><input type="text" id="pp" name="passphrase" autocomplete="off" required></div>';
     echo '<p class="muted">合言葉を変えても、登録済みの会員はそのまま投稿できます。外部に漏れたときは変更し、不審な会員は「会員」タブで停止してください。</p><div class="btns"><button class="primary" type="submit">合言葉を保存</button></div></form>';
+    $once = (string)($_SESSION['wsc_tick_token_once'] ?? '');
+    unset($_SESSION['wsc_tick_token_once']);
+    $tickSet = is_file(wsc_path('tick.key'));
+    echo '<form class="edit" method="post"><h2 style="margin-top:0">定期実行トークン（送信忘れの自動確定用）</h2>';
+    echo '<p>現在：<b>' . ($tickSet ? '発行済み' : '未発行') . '</b>。GitHub Actions が15分ごとにこのトークンを付けて自動確定を呼び出します。</p>';
+    if ($once !== '') echo '<p class="flash">GitHubのSecret名 <b>WSC_TICK_TOKEN</b> に、次の値を登録してください（再表示できません）：<br><code style="word-break:break-all;font-size:15px">' . wsc_h($once) . '</code></p>';
+    echo '<input type="hidden" name="csrf" value="' . wsc_h($csrf) . '"><input type="hidden" name="action" value="tick_token">';
+    echo '<p class="muted">再発行すると古いトークンは使えなくなります（GitHubのSecretも登録し直してください）。</p><div class="btns"><button type="submit">' . ($tickSet ? 'トークンを再発行' : 'トークンを発行') . '</button></div></form>';
     echo '<form class="edit" method="post"><h2 style="margin-top:0">自動掲載</h2><p>現在：<b>' . ($autoOn ? 'ON（「送信」ですぐ掲載）' : 'OFF（承認待ちに入る）') . '</b></p>';
     echo '<input type="hidden" name="csrf" value="' . wsc_h($csrf) . '"><input type="hidden" name="action" value="auto_publish"><input type="hidden" name="value" value="' . ($autoOn ? '0' : '1') . '">';
     echo '<p class="muted">荒らし投稿が続くときはOFFにすると、新しい投稿はすべて承認待ちになります。1日' . WSC_SITE_DAILY_PUBLISH . '件を超えた分も自動で承認待ちになります。</p>';
