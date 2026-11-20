@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """釣果投稿APIの結合テスト。line-api を一時フォルダへコピーし、PHP内蔵サーバー＋LINE API偽装で一連の流れを確認する。
 実行: python3 -I tests/test_line_api.py
 """
@@ -410,7 +410,7 @@ try:
     for u in (UD, UE, UF, UG, UH, UI, UJ):
         webhook([ev(u, "text", text="Saika1981")])
     check(len(store()["members"]) == len(known) + 7 and "登録できました" in last()[0], "追加の会員を合言葉だけで登録")
-    check("登録できました" in last()[0] and "お名前を送ると" in last()[0] and "なくてもOK" in last()[0], "登録後の案内は名前任意・写真だけでもOKと伝える")
+    check("登録できました" in last()[0] and "お名前を送って" in last()[0] and "なくてもOK" in last()[0], "登録後の案内は名前任意・写真だけでもOKと伝える")
     new_keys = [k for k in store()["members"] if k not in known]
     # 登録順に UD, UE, UF, UG, UH, UI, UJ。ユーザーIDは保存されないので、投稿数の差分と投稿者名で確認する。
     base = {p for p in store()["posts"]}
@@ -418,9 +418,14 @@ try:
     def new_posts():
         return [p for i, p in store()["posts"].items() if i not in base]
 
+    def close_append_window():
+        s = store()
+        for pp in s["posts"].values(): pp.pop("auto_comment_at", None)
+        json.dump(s, open(path, "w", encoding="utf-8"), ensure_ascii=False)
+
     # 1) 名前 → 写真 → コメント（自動で掲載）
     webhook([ev(UD, "text", text="山田さん")])
-    check(last() == ["山田さん、こんにちは！\n釣果の写真を送ってください。"] and not new_posts() and last_quick() == [],
+    check(last() == ["山田さん、こんにちは。\n釣果の写真を送ってください（1〜5枚）。"] and not new_posts() and last_quick() == [],
           "先に名前だけ送ると「山田さん、こんにちは！」と返し、写真がないので投稿は作らない")
     webhook([ev(UD, "image", mid="1001")])
     check(last() == [PHOTO_MSG] and last_quick() == ["送信する"], "写真を送るとコメント案内と「送信する」ボタン")
@@ -431,7 +436,7 @@ try:
     check(len(replies()) == n_rep and len(new_posts()[0]["photos"]) == 2, "2枚目の写真では同じ受け取り案内を重複して返さない（写真は追加される）")
     webhook([ev(UD, "text", text="朝からマダイが釣れました")])
     p = new_posts()[0]
-    check(last() == ["ありがとうございます！釣果情報を掲載しました。\n" + URL], "コメントを送ると自動で掲載しお礼とリンクを返す（ボタン不要）")
+    check(last() == ["ありがとうございます。釣果情報に掲載しました。\n" + URL], "コメントを送ると自動で掲載しお礼とリンクを返す（ボタン不要）")
     check(p["status"] == "published" and p["author"] == "山田" and p["comment"] == "朝からマダイが釣れました" and len(p["photos"]) == 2 and not store()["drafts"]
           and len(new_posts()) == 1, "複数写真＋コメントは1件にまとまり、名前・コメントが載る")
     n_pub = len([x for x in store()["posts"].values() if x["status"] == "published"])
@@ -445,7 +450,7 @@ try:
     check(last() == [PHOTO_MSG] and last_quick() == ["送信する"], "名前なしで写真だけでも案内とボタンが出る")
     webhook([ev(UE, "text", text="送信")])
     e = [p for i, p in store()["posts"].items() if i not in before_ids][0]
-    check(last() == ["ありがとうございます！釣果情報を掲載しました。\n" + URL] and e["status"] == "published" and e["author"] == "" and e["comment"] == "",
+    check(last() == ["ありがとうございます。釣果情報に掲載しました。\n" + URL] and e["status"] == "published" and e["author"] == "" and e["comment"] == "",
           "写真だけ＋「送信する」で掲載され、お礼とリンクを返す")
     api = json.loads(req("feed.php")[1])["posts"]
     check(e["id"] in [x["id"] for x in api], "掲載された写真だけの投稿は公開APIに出る")
@@ -453,7 +458,7 @@ try:
     # 3) 名前 → 写真のみ → 送信する（コメントなし）／名前だけでは何も作らない
     before_ids = set(store()["posts"])
     webhook([ev(UF, "text", text="名前：まこ")])
-    check(last()[0].startswith("まこさん、こんにちは！"), "ラベル付き「名前：まこ」も受け付ける")
+    check(last()[0].startswith("まこさん、こんにちは。"), "ラベル付き「名前：まこ」も受け付ける")
     webhook([ev(UF, "text", text="送信")])
     check(set(store()["posts"]) == before_ids and any("送信する内容がまだありません" in t for t in last()), "名前だけの状態で「送信」を押しても公開されない")
     webhook([ev(UF, "image", mid="1001"), ev(UF, "image", mid="1002")])
@@ -493,8 +498,9 @@ try:
     check(len(j) == 1 and len(j[0]["photos"]) == 3 and j[0]["status"] == "published", "写真を複数追加した後のコメントも最後の1件にまとまる")
     check(json.loads(req("feed.php")[1])["posts"][0]["comment"] == "<img src=x onerror=alert(1)> 良型でした", "コメントは加工せずデータとして保存（表示側JSでエスケープ）")
     webhook([ev(UJ, "text", text="使い方")])
-    check("お名前を送る" in last()[0] and "写真がないと載りません" in last()[0] and "取消" in last()[0], "ヘルプは名前→写真→コメント（なければ送信する）を案内")
+    check("名前を送る" in last()[0] and "写真がないと載りません" in last()[0] and "取消" in last()[0], "ヘルプは名前→写真→コメント（なければ送信する）を案内")
 
+    close_append_window()   # 直前の追記ウィンドウを閉じる（次は新規投稿の検証）
     # 6) 写真なしの下書きは1時間放置されても掲載されず消える
     webhook([ev(UJ, "text", text="アジ 20匹\n夕まずめに入れ食い")])
     s = store(); did0 = [p["id"] for p in s["posts"].values() if not p["photos"] and p["status"] == "draft"][0]
@@ -515,11 +521,12 @@ try:
     s["posts"][stale_id] = {"id": stale_id, "status": "draft", "user_key": kk, "_line_user": UK, "created_at": now_iso, "updated_at": now_iso,
                             "last_activity": int(time.time()) - 600, "texts": ["投稿者：てすと"], "photos": [], "fish": "", "caught_on": "",
                             "comment": "", "author": "てすと", "notice_sent": {}}
+    if isinstance(s["drafts"], list): s["drafts"] = {}
     s["drafts"][kk] = stale_id
     json.dump(s, open(path, "w", encoding="utf-8"), ensure_ascii=False)
     before_ids = set(store()["posts"]) - {stale_id}
     webhook([ev(UK, "text", text="山本")])
-    check(last() == ["山本さん、こんにちは！\n釣果の写真を送ってください。"], "古い下書きがあっても最初の「山本」は名前として受け取る")
+    check(last() == ["山本さん、こんにちは。\n釣果の写真を送ってください（1〜5枚）。"], "古い下書きがあっても最初の「山本」は名前として受け取る")
     webhook([ev(UK, "image", mid="1001")])
     webhook([ev(UK, "image", mid="1002")])
     webhook([ev(UK, "text", text="マダイですと")])
@@ -531,15 +538,13 @@ try:
 
     # 8) 回帰（実機）：釣果を掲載した後に漢字1文字の「堺」、続けて「山本」を送ると、どちらも名前として挨拶する。
     #    その後に写真2枚を続けて送ると受け取り案内は1回だけ。「送信」で山本の1件として掲載される。
-    webhook([ev(UK, "image", mid="1001")])
-    webhook([ev(UK, "text", text="コメント付きで掲載ずみ")])
     check(kk not in store()["drafts"] and "掲載しました" in last()[0], "前の釣果はコメントで掲載済み")
     before_ids = set(store()["posts"])
     webhook([ev(UK, "text", text="堺")])
-    check(last() == ["堺さん、こんにちは！\n釣果の写真を送ってください。"] and set(store()["posts"]) == before_ids,
+    check(last() == ["堺さん、こんにちは。\n釣果の写真を送ってください（1〜5枚）。"] and set(store()["posts"]) == before_ids,
           f"漢字1文字の名字「堺」も名前として受け取る（投稿は作らない）: {last()!r}")
     webhook([ev(UK, "text", text="山本")])
-    check(last() == ["山本さん、こんにちは！\n釣果の写真を送ってください。"] and set(store()["posts"]) == before_ids,
+    check(last() == ["山本さん、こんにちは。\n釣果の写真を送ってください（1〜5枚）。"] and set(store()["posts"]) == before_ids,
           f"続けて「山本」も名前として受け取り、文章扱いにしない: {last()!r}")
     n_rep = len(replies())
     webhook([ev(UK, "image", mid="1001"), ev(UK, "image", mid="1002")])
@@ -556,11 +561,12 @@ try:
     s["posts"][stale_id] = {"id": stale_id, "status": "draft", "user_key": kk, "_line_user": UK, "created_at": now_iso, "updated_at": now_iso,
                             "last_activity": int(time.time()) - 60, "texts": ["堺"], "photos": [], "fish": "", "caught_on": "",
                             "comment": "", "author": "", "notice_sent": {}}
+    if isinstance(s["drafts"], list): s["drafts"] = {}
     s["drafts"][kk] = stale_id
     s.get("rate", {}).pop(kk, None)   # 1分間の操作上限にかからないようにする
     json.dump(s, open(path, "w", encoding="utf-8"), ensure_ascii=False)
     webhook([ev(UK, "text", text="山本")])
-    check(last() == ["山本さん、こんにちは！\n釣果の写真を送ってください。"], "写真のない下書きがあっても「山本」は名前")
+    check(last() == ["山本さん、こんにちは。\n釣果の写真を送ってください（1〜5枚）。"], "写真のない下書きがあっても「山本」は名前")
     webhook([ev(UK, "image", mid="1001"), ev(UK, "image", mid="1002")])
     webhook([ev(UK, "text", text="良型でした")])
     p = store()["posts"][stale_id]
@@ -572,6 +578,81 @@ try:
         webhook([ev(UK, "text", text=text)])
         check("さん、こんにちは" not in last()[0], f"1文字の非名前は名前にしない: {text}")
         webhook([ev(UK, "text", text="取消")])
+    # 7) 追加の新フロー：コメント分割・遅れた写真・取消・重複・並行会員
+    UK, UL, UM = "U" + "3" * 32, "U" + "4" * 32, "U" + "5" * 32
+    for u in (UK, UL, UM):
+        webhook([ev(u, "text", text="Saika1981")])
+    check(all("登録できました" in t for t in last()), "新フロー用の会員を登録")
+
+    # 7a) 名前→写真→コメントの後に、コメントが続けて届いたら同じ投稿へ追記（新規投稿にしない）
+    base = set(store()["posts"])
+    webhook([ev(UK, "text", text="高橋")])
+    webhook([ev(UK, "image", mid="1001")])
+    webhook([ev(UK, "text", text="朝イチに釣れました")])
+    k_new = [i for i in store()["posts"] if i not in base]
+    check(len(k_new) == 1 and store()["posts"][k_new[0]]["status"] == "published", "名前→写真→コメントで掲載")
+    webhook([ev(UK, "text", text="大きなマダイでした")])
+    kp = store()["posts"][k_new[0]]
+    check(len([i for i in store()["posts"] if i not in base]) == 1 and not store()["drafts"], "続けて届いたコメントは新しい投稿にならない")
+    check(kp["comment"] == "朝イチに釣れました\n大きなマダイでした" and kp["author"] == "高橋" and any("コメントを追加しました" in t for t in last()),
+          "分割されたコメントは既存投稿へ順番に追記される")
+    # 7b) 掲載直後（2分以内）に遅れて届いた写真は同じ投稿へ追加。公開APIにも反映
+    webhook([ev(UK, "image", mid="1002")])
+    kp = store()["posts"][k_new[0]]
+    check(len(kp["photos"]) == 2 and len([i for i in store()["posts"] if i not in base]) == 1 and not store()["drafts"] and any("写真を追加しました" in t for t in last()),
+          "掲載直後に遅れた写真は同じ投稿へ追加（二重投稿にしない）")
+    check(len([p for p in json.loads(req("feed.php")[1])["posts"] if p["id"] == k_new[0]][0]["photos"]) == 2, "追加写真が公開APIにも反映")
+    # 窓を閉じた後の写真は新しい下書き（古い投稿を書き換えない）
+    close_append_window()
+    webhook([ev(UK, "image", mid="1001")])
+    check(len(store()["posts"][k_new[0]]["photos"]) == 2 and len(store()["drafts"]) == 1 and last_quick() == ["送信する"], "時間が経った写真は新しい下書き（送信前は非公開）")
+    webhook([ev(UK, "text", text="取消")])
+    check(not store()["drafts"] and len(store()["posts"][k_new[0]]["photos"]) == 2, "取消で新しい下書きだけ消え、掲載済みは残る")
+
+    # 7c) 名前→取消→写真→送信：取消した名前は使わない
+    base = set(store()["posts"])
+    webhook([ev(UL, "text", text="田中さん")])
+    webhook([ev(UL, "text", text="取消")])
+    webhook([ev(UL, "image", mid="1001"), ev(UL, "text", text="送信")])
+    lp = [p for i, p in store()["posts"].items() if i not in base]
+    check(len(lp) == 1 and lp[0]["author"] == "" and lp[0]["status"] == "published", "取消した名前は次の投稿に引き継がない")
+
+    # 7d) 名前→文章のみ→写真→送信：写真が来るまで公開しない。文章は失わない（直前の写真だけ投稿にも追記しない）
+    base = set(store()["posts"])
+    webhook([ev(UL, "text", text="田中")])
+    webhook([ev(UL, "text", text="今日は大漁でした")])
+    check(not [p for i, p in store()["posts"].items() if i not in base and p["status"] == "published"] and "写真" in last()[0]
+          and not any(p["comment"] for i, p in store()["posts"].items() if i in base and p["author"] == "" and "大漁" in p["comment"]),
+          "名前のあとにテキストだけ続いても写真なしで公開しない")
+    webhook([ev(UL, "image", mid="1002")])
+    check(last_quick() == ["送信する"] and not [p for i, p in store()["posts"].items() if i not in base and p["status"] == "published"], "写真が届いても送信前は非公開")
+    webhook([ev(UL, "text", text="送信")])
+    lp = [p for i, p in store()["posts"].items() if i not in base]
+    check(len(lp) == 1 and lp[0]["author"] == "田中" and "大漁でした" in lp[0]["comment"] and lp[0]["status"] == "published", "文章・名前・写真が1件にまとまって掲載")
+    close_append_window()
+
+    # 7e) 2人が並行して投稿（名前・写真・コメントが混ざらない）。重複イベントも二重にしない
+    base = set(store()["posts"])
+    dup = ev(UM, "text", text="伊藤")
+    webhook([ev(UL, "text", text="渡辺"), dup, ev(UL, "image", mid="1001"), ev(UM, "image", mid="1002"), dup])
+    webhook([ev(UM, "text", text="伊藤のコメント"), ev(UL, "text", text="送信")])
+    np_ = {p["author"]: p for i, p in store()["posts"].items() if i not in base}
+    check(set(np_) == {"渡辺", "伊藤"} and len(np_) == 2, "並行した2人の投稿が混ざらず2件になる")
+    check(np_["伊藤"]["comment"] == "伊藤のコメント" and np_["渡辺"]["comment"] == "" and len(np_["伊藤"]["photos"]) == 1 and len(np_["渡辺"]["photos"]) == 1,
+          "各人の写真・コメントが正しい投稿に入る")
+    check(all(p["status"] == "published" for p in np_.values()) and not store()["drafts"], "並行投稿とも掲載され、下書きは残らない")
+    close_append_window()
+
+    # 7f) 写真だけ→遅れたコメントは直近の写真投稿へ（従来仕様）。次の釣果は名前から始められる
+    base = set(store()["posts"])
+    webhook([ev(UM, "image", mid="2001"), ev(UM, "text", text="送信")])
+    webhook([ev(UM, "text", text="沖はうねりがありました")])
+    mp = [p for i, p in store()["posts"].items() if i not in base]
+    check(len(mp) == 1 and mp[0]["comment"] == "沖はうねりがありました", "写真だけ掲載後のコメントは同じ投稿へ（従来仕様を維持）")
+    webhook([ev(UM, "text", text="伊藤")])
+    check(last()[0].startswith("伊藤さん、こんにちは。") and len([i for i in store()["posts"] if i not in base]) == 1, "次の釣果は名前から始められる")
+    webhook([ev(UM, "text", text="取消")])
+    close_append_window()
 
     before = len(store()["posts"])
     webhook([ev(UA, "text", text=f"連投{i}") for i in range(25)])

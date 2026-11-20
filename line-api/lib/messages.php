@@ -15,8 +15,9 @@ function wsc_msg_welcome(): array
 {
     return [wsc_text_message(
         "和歌山雑賀クラブ 釣果投稿LINEへようこそ！\n\n" .
-        "【1】最初の1回だけ\nクラブから聞いた「合言葉」を、そのまま送ってください。\n\n" .
-        "【2】釣果を送る\n① お名前を送る（なくてもOK）\n② 釣果の写真を送る\n③ コメントを送る\n　（なければ、下の「送信する」を押す）\n\n" .
+        "【最初の1回だけ】\nクラブから聞いた「合言葉」を、そのまま送ってください。\n\n" .
+        "【釣果の送り方】\n① 名前\n② 写真（5枚まで）\n③ コメント（なくてもOK）\n\n" .
+        "コメントがなければ、写真のあとに出る「送信する」を押してください。\n" .
         "送ると、ホームページの「釣果情報」に載ります。"
     )];
 }
@@ -25,10 +26,9 @@ function wsc_msg_help(): array
 {
     return [wsc_text_message(
         "【釣果の送り方】\n" .
-        "① お名前を送る（なくてもOK）\n　→「○○さん、こんにちは！」と返ってきたら、次は写真です。\n" .
-        "② 釣果の写真を送る（5枚まで）\n" .
-        "③ コメントを送る\n　（なければ「送信する」を押す）\n\n" .
-        "※ 写真がないと載りません。\n※ やり直すときは「取消」と送ってください。\n※ 初めての方は、合言葉だけを送ってください。"
+        "① 名前を送る\n② 写真を送る（5枚まで）\n③ コメントを送る（なくてもOK）\n" .
+        "　コメントがなければ「送信する」を押す\n\n" .
+        "※ 写真がないと載りません。\n※ 名前なしで、写真だけでも送れます。\n※ やり直すときは「取消」と送ってください。\n※ 初めての方は、合言葉だけを送ってください。"
     )];
 }
 
@@ -44,7 +44,13 @@ function wsc_msg_photo_received(): array
 /** 名前を先に送ったとき。 */
 function wsc_msg_name_greeting(string $name): array
 {
-    return [wsc_text_message($name . "さん、こんにちは！\n釣果の写真を送ってください。")];
+    return [wsc_text_message($name . "さん、こんにちは。\n釣果の写真を送ってください（1〜5枚）。")];
+}
+
+/** 掲載直後に遅れて届いた写真を、同じ投稿へ追加したとき。 */
+function wsc_msg_photo_added(): array
+{
+    return [wsc_text_message("写真を追加しました。\nホームページで確認できます。\n" . WSC_SITE_CATCH_URL)];
 }
 
 /** 写真より先に文章だけが届いたとき（写真がないと掲載しない）。 */
@@ -60,7 +66,7 @@ function wsc_msg_need_photo(): array
 
 function wsc_msg_published(): array
 {
-    return [wsc_text_message("ありがとうございます！釣果情報を掲載しました。\n" . WSC_SITE_CATCH_URL)];
+    return [wsc_text_message("ありがとうございます。釣果情報に掲載しました。\n" . WSC_SITE_CATCH_URL)];
 }
 
 function wsc_msg_already_published(): array
@@ -91,7 +97,7 @@ function wsc_msg_need_registration(): array
 function wsc_msg_registered(): array
 {
     return [wsc_text_message(
-        "登録できました！\n\nお名前を送ると、名前つきで載ります（なくてもOK）。\nそのまま釣果の写真を送ってもかまいません。"
+        "登録できました。\n\n【釣果の送り方】\n① 名前\n② 写真（5枚まで）\n③ コメント（なくてもOK）\n\nコメントがなければ「送信する」を押してください。\nまず、お名前を送ってください。写真だけでも大丈夫です。"
     )];
 }
 

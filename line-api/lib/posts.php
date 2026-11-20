@@ -158,7 +158,27 @@ function wsc_recent_submitted_post(array $state, string $userKey): ?array
     return $best;
 }
 
-const WSC_NAME_KEEP_SECONDS = 43200;   // 先に送られた名前を覚えておく時間（12時間）
+/**
+ * 掲載直後の文章の追記先を探す。見つからなければ null。
+ *  ・写真だけで掲載し、まだコメントが空の投稿：60分以内
+ *  ・コメントで自動掲載した投稿（auto_comment_at）：10分以内（コメントが分割されて届いた場合）
+ */
+function wsc_find_append_target(array $state, string $userKey): ?string
+{
+    $best = null; $bestTime = 0;
+    foreach ($state['posts'] as $pid => $p) {
+        if (($p['user_key'] ?? '') !== $userKey || ($p['status'] ?? '') !== 'published' || empty($p['photos'])) continue;
+        $when = strtotime((string)($p['submitted_at'] ?? '')) ?: 0;
+        $viaComment = (int)($p['auto_comment_at'] ?? 0) >= time() - 600;
+        $photoOnly = trim((string)($p['comment'] ?? '')) === '' && $when >= time() - 3600;
+        if (!$viaComment && !$photoOnly) continue;
+        if ($when > time() || $when <= $bestTime) continue;
+        $best = (string)$pid; $bestTime = $when;
+    }
+    return $best;
+}
+
+const WSC_NAME_KEEP_SECONDS = 43200;  // 先に送られた名前を覚えておく時間（12時間）
 
 /**
  * 「山田」「山田太郎」「まこ」「山田さん」「名前：山田」のような名前だけの短いメッセージから名前を取り出す。
@@ -181,7 +201,7 @@ function wsc_parse_name_message(string $text): ?string
     }
     if (mb_strlen($t) > 8) return null;
     if (!preg_match('/^[\p{Han}\p{Hiragana}\p{Katakana}ー々A-Za-z]+(?: [\p{Han}\p{Hiragana}\p{Katakana}ー々A-Za-z]+)?$/u', $t)) return null;
-    if (preg_match('/匹|尾|本|枚|杯|キロ|釣|魚|大漁|不漁|ありがとう|お疲れ|です|ます|でした|ました|ください|よろしく|すみません|おはよう|こんにち|こんばん/u', $t)) return null;
+    if (preg_match('/釣|魚|大漁|不漁|ありがとう|お疲れ|です|ます|でした|ました|ください|よろしく|すみません|おはよう|こんにち|こんばん/u', $t)) return null;
     $stop = ['はい', 'いいえ', 'ok', 'りょうかい', '了解', 'なし', 'ボウズ', '坊主', 'マダイ', 'タイ', 'クロダイ', 'チヌ', 'アジ', 'サバ', 'イワシ', 'ブリ',
         'ハマチ', 'メジロ', 'カンパチ', 'ヒラメ', 'スズキ', 'グレ', 'メバル', 'カサゴ', 'ガシラ', 'キス', 'ハゼ', 'イカ', 'アオリイカ', 'タコ', 'サゴシ', 'サワラ',
         'タチウオ', 'ヒラマサ', 'シーバス', 'サヨリ', 'カワハギ', 'ウマヅラ', 'アコウ', 'キジハタ', 'ハタ', 'ヤズ', 'ワラサ', 'イサキ', 'アマダイ', 'ガッシー'];
