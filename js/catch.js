@@ -142,17 +142,66 @@
     return li;
   }
 
-  if (!api) { showEmpty(""); return; }
-  fetch(new URL("feed.php", api).href, { mode: "cors", credentials: "omit", headers: { Accept: "application/json" } })
-    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
-    .then(function (data) {
-      var posts = data && Array.isArray(data.posts) ? data.posts : [];
-      if (!posts.length) { showEmpty(""); return; }
-      var frag = document.createDocumentFragment();
-      posts.forEach(function (p) { frag.appendChild(card(p)); });
-      list.replaceChildren(frag);
-      status.textContent = "";
-      if (empty) empty.hidden = true;
+  var refreshButton = document.getElementById("catch-refresh");
+  var refreshing = false;
+  var lastLoadedAt = 0;
+  function refreshPosts() {
+    if (!api || refreshing) return;
+    refreshing = true;
+    if (refreshButton) {
+      refreshButton.disabled = true;
+      refreshButton.textContent = "更新中…";
+    }
+    // LINEから戻ったときも古いHTTPキャッシュを使わずに最新の釣果を読む。
+    var feedUrl = new URL("feed.php", api);
+    feedUrl.searchParams.set("v", String(Date.now()));
+    fetch(feedUrl.href, {
+      mode: "cors", credentials: "omit", cache: "no-store",
+      headers: { Accept: "application/json" }
     })
-    .catch(function () { showEmpty("釣果情報を読み込めませんでした。時間をおいて再度お試しください。"); });
+      .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function (data) {
+        var posts = data && Array.isArray(data.posts) ? data.posts : [];
+        if (!posts.length) {
+          showEmpty("");
+        } else {
+          var frag = document.createDocumentFragment();
+          posts.forEach(function (p) { frag.appendChild(card(p)); });
+          list.replaceChildren(frag);
+          status.textContent = "";
+          if (empty) empty.hidden = true;
+        }
+        lastLoadedAt = Date.now();
+      })
+      .catch(function () {
+        // 通信エラーが起きても、表示済みの釣果は消さない。
+        if (!list.children.length) {
+          showEmpty("釣果情報を読み込めませんでした。時間をおいて再度お試しください。");
+        } else {
+          status.textContent = "更新できませんでした。もう一度お試しください。";
+        }
+      })
+      .finally(function () {
+        refreshing = false;
+        if (refreshButton) {
+          refreshButton.disabled = false;
+          refreshButton.textContent = "最新情報を更新";
+        }
+      });
+  }
+  if (!api) { showEmpty(""); return; }
+  if (refreshButton) refreshButton.addEventListener("click", refreshPosts);
+  function refreshIfBack() {
+    if (!document.hidden && Date.now() - lastLoadedAt >= 10000) refreshPosts();
+  }
+  window.addEventListener("pageshow", function (e) {
+    if (e.persisted) refreshPosts();
+  });
+  document.addEventListener("visibilitychange", refreshIfBack);
+  window.addEventListener("focus", refreshIfBack);
+  // LINE内ブラウザを開きっぱなしでも約1分ごとに新着を確認。
+  window.setInterval(function () {
+    if (!document.hidden && Date.now() - lastLoadedAt >= 60000) refreshPosts();
+  }, 60000);
+  refreshPosts();
 })();

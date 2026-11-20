@@ -7,6 +7,9 @@
 .catch-title-en em{font-style:normal;color:var(--orange)}
 .catch-intro{font-weight:600;font-size:clamp(14px,1.8vw,17px);line-height:1.9;max-width:34em;margin:0}
 .catch-content{background:#f0f3f3;padding:clamp(56px,8vw,100px) 0}
+.catch-refresh{min-height:44px;padding:9px 16px;margin:0 0 17px;border:1px solid #203646;border-radius:5px;background:#fff;color:#0c1720;font:inherit;font-size:14px;font-weight:800;cursor:pointer}
+.catch-refresh:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+.catch-refresh:disabled{opacity:.65;cursor:wait}
 .catch-status{font-size:14px;color:#536570;margin:0 0 18px}
 .catch-status:empty{display:none}
 .catch-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:clamp(14px,2vw,26px)}
