@@ -3,7 +3,7 @@
  * LINE Webhook 受付
  * 1) 生のボディで署名検証 → 失敗は 401 で拒否
  * 2) webhookEventId で重複排除（LINEの再送にも対応）
- * 3) 写真・文章を「下書き」に貯め、「送信」で承認待ち(pending)に確定
+ * 3) 未登録者は合言葉だけで登録。登録後は写真・文章を貯め「送信」で自動掲載
  */
 declare(strict_types=1);
 define('WSC_APP', true);
@@ -109,8 +109,14 @@ function wsc_handle_event(array $event): void
 
         $text = $kind === 'text' ? (string)($message['text'] ?? '') : '';
 
-        // 会員登録「登録 合言葉」
-        if ($kind === 'text' && ($reg = wsc_parse_registration($text)) !== null) {
+        // 初回登録は合言葉だけでOK。旧方式「登録 合言葉」も受け付ける。
+        // 登録済み会員の普通のコメントは、合言葉として解釈しない。
+        if ($kind === 'text' && !wsc_is_member($s, $userKey)
+            && !wsc_is_command($text, WSC_CMD_HELP)
+            && !wsc_is_command($text, WSC_CMD_SUBMIT)
+            && !wsc_is_command($text, WSC_CMD_CANCEL)
+            && trim($text) !== '' && !preg_match('/\\R/u', $text) && mb_strlen($text) <= 100) {
+            $reg = wsc_parse_registration($text) ?? ['pass' => trim($text), 'name' => ''];
             if (wsc_is_blocked($s, $userKey)) { $replies = wsc_msg_blocked(); return; }
             if (wsc_is_member($s, $userKey)) { $replies = wsc_msg_registered(); return; }
             if (!wsc_passphrase_set($s)) { $replies = wsc_msg_registration_closed(); return; }
