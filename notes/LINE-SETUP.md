@@ -4,12 +4,12 @@
 - 最新公式サイト main をコピーした **独立したPC04作業ブランチ**。
 - GitHub Pages本番、チャットホーム、rss7.net、DNSは変更しない。
 - 釣果ページのタイトル / H1 は「釣果情報」。
-- LINE公式アカウント未開設、ロリポップ公開先未確定。外部本番接続は行っていない。
+- LINE公式アカウント未開設、ロリポップ公開先は `azuma.rss7.net`・公開フォルダ `azuma` と確認。サブドメイン設定保存/無料SSL/アップロードは未確認で、外部本番接続は行っていない。詳細は `notes/AZUMA-DEPLOY.md`。
 - PR #17 は Draft。正式な配備までmainへマージしない。
 
 ## 2つのURLを扱うルール
 - クラブの公式閲覧先は従来の GitHub Pages URL のまま。
-- ロリポップのコピーは別URL（アドレス欄では同じドメインにできない）。
+- ロリポップのコピーは `https://azuma.rss7.net/` という別URL（アドレス欄では同じドメインにできない）。
 - ロリポップ側コピーの HTTP Header `X-Robots-Tag: noindex, nofollow` はルートの .htaccess で配信する。ロリポップ公開後はヘッダーが正しく出ることを必ず確認する。
 - 公式GitHub Pages の既存5ページの `index,follow` とcanonicalはそのまま維持し、重複サイトによるSEO事故を避ける。
 - ロリポップ側で投稿した写真は `line-api/feed.php` のJSONを通じて、将来はGitHub Pagesでも表示できる（公開HTTPS URL確定後に設定）。
