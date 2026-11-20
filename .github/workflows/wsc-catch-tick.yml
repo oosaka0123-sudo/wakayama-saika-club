@@ -22,10 +22,16 @@ jobs:
       - name: Trigger WSC expired-draft processing
         env:
           TICK_URL: https://saika.rss7.net/line-api/tick.php
+          TICK_TOKEN: ${{ secrets.WSC_TICK_TOKEN }}
         run: |
           set -euo pipefail
+          if [ -z "${TICK_TOKEN}" ]; then
+            echo "::error::WSC_TICK_TOKEN is not configured in repository Actions secrets"
+            exit 1
+          fi
           curl --fail --silent --show-error \
             --connect-timeout 10 --max-time 35 \
             --retry 2 --retry-delay 5 \
+            -H "X-WSC-Tick-Token: ${TICK_TOKEN}" \
             --output /dev/null \
             "$TICK_URL"
