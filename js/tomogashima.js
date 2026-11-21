@@ -93,15 +93,6 @@
     $("tw-prev").disabled = selectedDay === 0;
     $("tw-next").disabled = selectedDay === 2;
   }
-  function renderSummary(rows) {
-    var p = rows.find(function (r) { return r.hour === selectedHour; }) || rows[0];
-    $("tw-selected-time").textContent = p.hour + ":00";
-    $("tw-selected-wave").textContent = fmt(p.wave, 1) + (p.wave === null ? "" : " m");
-    $("tw-selected-period").textContent = fmt(p.period, 1) + (p.period === null ? "" : " 秒");
-    $("tw-selected-wind").textContent = fmt(p.wind, 1) + (p.wind === null ? "" : " m/s");
-    $("tw-selected-gust").textContent = fmt(p.gust, 1) + (p.gust === null ? "" : " m/s");
-    $("tw-selected-direction").textContent = compass(p.direction);
-  }
   function renderTable(rows) {
     var ids = ["tw-hours-row","tw-weather-row","tw-wave-row","tw-period-row","tw-wind-row","tw-gust-row","tw-direction-row"];
     ids.forEach(function (id) {
@@ -230,7 +221,6 @@
   function render() {
     updateTitle();
     var rows = points();
-    renderSummary(rows);
     renderTable(rows);
     renderGraph(rows);
     if (meteo || marine) {
