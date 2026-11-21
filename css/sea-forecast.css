@@ -80,3 +80,9 @@
 .sea-forecast .sf-extra{font-size:10px}
 }
 @media(prefers-reduced-motion:reduce){.sea-forecast *, .sea-forecast *::before, .sea-forecast *::after{scroll-behavior:auto!important;transition:none!important}}
+
+/* Link to hourly forecast detail; homepage forecast section only. */
+.sea-forecast .sf-detail-cta{margin:18px 0 7px}
+.sea-forecast .sf-detail-cta a{display:inline-flex;gap:9px;align-items:center;justify-content:center;min-height:46px;padding:12px 19px;background:#fb7d13;color:#091927;border-radius:999px;font-size:14px;font-weight:900;text-decoration:none;line-height:1.4}
+.sea-forecast .sf-detail-cta a:hover{background:#ffa34e}
+.sea-forecast .sf-detail-cta a:focus-visible{outline:3px solid #fff;outline-offset:3px}
