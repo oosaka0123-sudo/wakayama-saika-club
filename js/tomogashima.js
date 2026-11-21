@@ -218,7 +218,8 @@
   }
   function keepSelectedHourVisible() {
     var index = hours.indexOf(selectedHour);
-    var centerX = 144 + (index + 0.5) * 72;
+    var scale = scroller.querySelector(".tw-rail").getBoundingClientRect().width / 1080;
+    var centerX = (144 + (index + 0.5) * 72) * scale;
     scroller.scrollLeft = Math.max(0, centerX - scroller.clientWidth / 2);
   }
   function chooseHour(hour) {
