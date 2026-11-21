@@ -11,7 +11,7 @@
 <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg?v=20261119-boat">
 <link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="../css/premium.css?v=20261119-nav1">
-<link rel="stylesheet" href="../css/tomogashima.css?v=20261121-compact1">
+<link rel="stylesheet" href="../css/tomogashima.css?v=20261121-datenav1">
 <script src="../js/main.js?v=20261119-share1" defer></script>
 <script src="../js/footer.js?v=20261120-location1" defer></script>
 <script src="../js/tomogashima.js?v=20261121-compact1" defer></script>
@@ -63,11 +63,6 @@
   <section class="tw-dashboard" aria-label="友ヶ島灯台の時間別海況">
     <div class="tw-container">
       <div class="tw-daybar">
-        <div class="tw-date-nav" aria-label="予報日を切り替え">
-          <button id="tw-prev" type="button" aria-label="前日の予報へ">‹ <span>前日</span></button>
-          <h2 id="tw-date">予報日を読み込んでいます</h2>
-          <button id="tw-next" type="button" aria-label="翌日の予報へ"><span>翌日</span> ›</button>
-        </div>
         <span class="tw-point">📍 友ヶ島灯台付近（紀淡海峡）</span>
       </div>
       <div class="tw-current" aria-label="選択時刻の予報">
@@ -77,6 +72,11 @@
         <div><small>💨 風速</small><strong id="tw-selected-wind">—</strong></div>
         <div><small>最大瞬間</small><strong id="tw-selected-gust">—</strong></div>
         <div><small>➤ 風向</small><strong id="tw-selected-direction">—</strong></div>
+      </div>
+      <div class="tw-date-nav tw-date-nav-chart" aria-label="予報日を切り替え">
+        <button id="tw-prev" type="button" aria-label="前日の予報へ">‹ <span>前日</span></button>
+        <h2 id="tw-date">予報日を読み込んでいます</h2>
+        <button id="tw-next" type="button" aria-label="翌日の予報へ"><span>翌日</span> ›</button>
       </div>
       <div class="tw-toolbar">
         <div class="tw-heading"><span class="tw-heading-symbol" aria-hidden="true">🌊</span><div><h2>風と波の一日予報</h2><p>波高は水色の縦棒 ／ 風速はオレンジの折れ線</p></div></div>
