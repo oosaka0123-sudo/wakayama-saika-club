@@ -12,13 +12,13 @@ $today = date('Y-m-d');
 $state = [
   'settings' => ['auto_publish' => true],
   'members' => ['member1' => ['blocked' => false], 'member2' => ['blocked' => true]],
-  'daily' => [$today => 99]
+  'daily' => [$today => 49]
 ];
-assert_cap(WSC_SITE_DAILY_PUBLISH === 100, 'club-wide automatic publishing cap is 100');
+assert_cap(WSC_SITE_DAILY_PUBLISH === 50, 'club-wide automatic publishing cap is 50');
 assert_cap(WSC_DAILY_SUBMIT_LIMIT === 10, 'member daily submission limit remains 10');
-assert_cap(wsc_can_auto_publish($state, 'member1'), '99 submitted today permits next auto post');
-$state['daily'][$today] = 100;
-assert_cap(!wsc_can_auto_publish($state, 'member1'), '100 submissions today go to review queue');
+assert_cap(wsc_can_auto_publish($state, 'member1'), '49 submitted today permits next auto post');
+$state['daily'][$today] = 50;
+assert_cap(!wsc_can_auto_publish($state, 'member1'), '50 submissions today go to review queue');
 $state['daily'][$today] = 0;
 assert_cap(!wsc_can_auto_publish($state, 'member2'), 'blocked members cannot auto publish');
 assert_cap(!wsc_can_auto_publish($state, 'unknown'), 'unknown users cannot auto publish');
