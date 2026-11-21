@@ -216,9 +216,15 @@
       if (index>=0&&index<13) chooseHour(hours[index]);
     };
   }
+  function keepSelectedHourVisible() {
+    var index = hours.indexOf(selectedHour);
+    var centerX = 144 + (index + 0.5) * 72;
+    scroller.scrollLeft = Math.max(0, centerX - scroller.clientWidth / 2);
+  }
   function chooseHour(hour) {
     selectedHour = hour;
     render();
+    keepSelectedHourVisible();
   }
   function render() {
     updateTitle();
@@ -286,5 +292,6 @@
   window.addEventListener("pageshow",function(event){if(event.persisted&&Date.now()-lastLoaded>1800000)refresh();});
   document.addEventListener("visibilitychange",function(){if(!document.hidden&&Date.now()-lastLoaded>1800000)refresh();});
   render();
+  requestAnimationFrame(keepSelectedHourVisible);
   refresh();
 })();
