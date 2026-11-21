@@ -20,6 +20,7 @@
           '<li><a href="' + base + '">ホーム</a></li>',
           '<li><a href="' + base + 'about/">クラブ紹介</a></li>',
           '<li><a href="' + base + 'catch/">釣果情報</a></li>',
+          '<li><a href="' + base + 'tomogashima/">友ヶ島灯台 海況・天気</a></li>',
           '<li><a href="' + base + 'gallery/">写真ギャラリー</a></li>',
           '<li><a href="' + base + 'location/">所在地・アクセス</a></li>',
           '<li><a href="' + base + 'join/">会員募集</a></li>',
