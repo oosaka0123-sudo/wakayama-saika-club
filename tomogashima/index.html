@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>友ヶ島灯台｜5時〜17時の波高・風速予報グラフ｜和歌山雑賀クラブ</title>
+<meta name="description" content="友ヶ島灯台付近の5:00〜17:00の波高・周期・風向・風速・最大瞬間風速・天気を時間別に確認。波の縦棒と風の折れ線を重ねた海況予報グラフ。">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#071927">
+<link rel="canonical" href="https://oosaka0123-sudo.github.io/wakayama-saika-club/tomogashima/">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg?v=20261119-boat">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/premium.css?v=20261119-nav1">
+<link rel="stylesheet" href="../css/tomogashima.css?v=20261121-1">
+<script src="../js/main.js?v=20261119-share1" defer></script>
+<script src="../js/footer.js?v=20261120-location1" defer></script>
+<script src="../js/tomogashima.js?v=20261121-1" defer></script>
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="友ヶ島灯台 一日の波・風・天気｜和歌山雑賀クラブ">
+<meta property="og:description" content="波高の縦棒グラフと風速の折れ線グラフを重ね、5:00〜17:00の海況を時間別に表示。">
+<meta property="og:url" content="https://oosaka0123-sudo.github.io/wakayama-saika-club/tomogashima/">
+<meta property="og:image" content="https://oosaka0123-sudo.github.io/wakayama-saika-club/assets/photos/21993.jpg">
+</head>
+<body class="tw-page">
+<a class="skip" href="#main">本文へ移動</a>
+<header class="site-header">
+  <div class="in">
+    <a class="brand" href="../" aria-label="和歌山雑賀クラブ トップへ">
+      <img src="../assets/logo-wsc.svg" width="92" height="56" alt="WSC 船のロゴ">
+      <div><small>WAKAYAMA SAIKA CLUB</small><span>和歌山雑賀クラブ</span></div>
+    </a>
+    <nav class="gnav" aria-label="メインメニュー">
+      <ul>
+        <li><a href="../about/"><small>ABOUT</small><span>クラブ紹介</span></a></li>
+        <li><a href="../catch/"><small>CATCH</small><span>釣果情報</span></a></li>
+        <li><a href="../location/"><small>ACCESS</small><span>所在地</span></a></li>
+        <li><a href="../join/" class="cta"><small>JOIN US</small><span>入会案内</span></a></li>
+      </ul>
+    </nav>
+    <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="drawer" aria-label="メニューを開く"><span class="bars"></span></button>
+  </div>
+</header>
+<nav class="drawer" id="drawer" aria-label="モバイルメニュー" inert>
+  <ul>
+    <li><a href="../"><small>HOME</small><span>ホーム</span></a></li>
+    <li><a href="../about/"><small>ABOUT</small><span>クラブ紹介</span></a></li>
+    <li><a href="../catch/"><small>CATCH</small><span>釣果情報</span></a></li>
+    <li><a href="./" aria-current="page"><small>FORECAST</small><span>友ヶ島灯台 海況予報</span></a></li>
+    <li><a href="../location/"><small>ACCESS</small><span>所在地</span></a></li>
+    <li><a href="../join/" class="cta"><small>JOIN US</small><span>入会案内</span></a></li>
+  </ul>
+</nav>
+<main id="main">
+  <section class="tw-hero" aria-labelledby="tw-title">
+    <div class="tw-hero-content">
+      <p class="tw-eyebrow">WSC / TOMOGASHIMA LIGHTHOUSE</p>
+      <h1 id="tw-title">友ヶ島灯台 <span>一日の波・風・天気</span></h1>
+      <p class="tw-tagline">紀淡海峡｜5:00〜17:00の時間別予報</p>
+      <p class="tw-image-caption">背景：和歌山周辺海域のイメージ写真</p>
+    </div>
+  </section>
+  <section class="tw-dashboard" aria-label="友ヶ島灯台の時間別海況">
+    <div class="tw-container">
+      <div class="tw-daybar">
+        <div class="tw-date-nav" aria-label="予報日を切り替え">
+          <button id="tw-prev" type="button" aria-label="前日の予報へ">‹ <span>前日</span></button>
+          <h2 id="tw-date">予報日を読み込んでいます</h2>
+          <button id="tw-next" type="button" aria-label="翌日の予報へ"><span>翌日</span> ›</button>
+        </div>
+        <span class="tw-point">📍 友ヶ島灯台付近（紀淡海峡）</span>
+      </div>
+      <div class="tw-current" aria-label="選択時刻の予報">
+        <div class="tw-current-time"><small>選択時刻</small><strong id="tw-selected-time">—</strong></div>
+        <div><small>🌊 波高</small><strong id="tw-selected-wave">—</strong></div>
+        <div><small>〰 周期</small><strong id="tw-selected-period">—</strong></div>
+        <div><small>💨 風速</small><strong id="tw-selected-wind">—</strong></div>
+        <div><small>最大瞬間</small><strong id="tw-selected-gust">—</strong></div>
+        <div><small>➤ 風向</small><strong id="tw-selected-direction">—</strong></div>
+      </div>
+      <div class="tw-toolbar">
+        <div class="tw-heading"><span class="tw-heading-symbol" aria-hidden="true">🌊</span><div><h2>風と波の一日予報</h2><p>波高は水色の縦棒 ／ 風速はオレンジの折れ線</p></div></div>
+        <div class="tw-legend" aria-label="グラフの凡例"><span><i class="tw-legend-bar"></i>波高（m）</span><span><i class="tw-legend-line"></i>風速（m/s）</span></div>
+      </div>
+      <div class="tw-panel">
+        <div class="tw-hint"><span>← 横にスクロールして時間帯を確認 →</span><span id="tw-updated">取得中</span></div>
+        <p id="tw-status" class="tw-status" role="status" aria-live="polite">友ヶ島灯台付近の予報を取得しています…</p>
+        <div class="tw-scroller" id="tw-scroller" role="region" tabindex="0" aria-label="5時から17時までのグラフと時間別データ。横スクロールできます">
+          <div class="tw-rail">
+            <div class="tw-weather-strip" id="tw-weather-strip" aria-label="時間別の天気"></div>
+            <svg id="tw-combo-chart" viewBox="0 0 1080 330" role="img" aria-label="5時から17時の波高を縦棒、風速を折れ線で重ねたグラフ"></svg>
+            <table class="tw-table" aria-label="時間別の天気・波高・周期・風速・最大瞬間風速・風向">
+              <thead><tr id="tw-hours-row"><th scope="col">時刻</th></tr></thead>
+              <tbody>
+                <tr id="tw-weather-row"><th scope="row">天気</th></tr>
+                <tr id="tw-wave-row"><th scope="row">波高（m）</th></tr>
+                <tr id="tw-period-row"><th scope="row">周期（秒）</th></tr>
+                <tr id="tw-wind-row"><th scope="row">風速（m/s）</th></tr>
+                <tr id="tw-gust-row"><th scope="row">最大瞬間（m/s）</th></tr>
+                <tr id="tw-direction-row"><th scope="row">風向</th></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <p class="tw-disclaimer">※ 友ヶ島灯台の実測値ではなく、Open-Meteoが提供する付近の気象・海況モデル予報です。沖合の格子点の値であり、航路・港内・釣り場の現況と異なります。出航前は必ず<a href="https://www.jma.go.jp/bosai/" target="_blank" rel="noopener noreferrer">気象庁の警報・注意報</a>と現地情報をご確認ください。データ：<a href="https://open-meteo.com/en/docs" target="_blank" rel="noopener noreferrer">Open-Meteo</a>／<a href="https://open-meteo.com/en/docs/marine-weather-api" target="_blank" rel="noopener noreferrer">Marine Weather API</a>。</p>
+      <p class="tw-return"><a href="../#sea-forecast">← トップページの天気欄へ戻る</a></p>
+    </div>
+  </section>
+</main>
+<footer data-wsc-footer aria-label="和歌山雑賀クラブ共通フッター"></footer>
+</body>
+</html>
