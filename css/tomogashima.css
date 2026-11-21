@@ -143,3 +143,7 @@
 .tw-page .tw-current-link:hover,.tw-page .tw-current-link:focus-visible{background:#ffb47b;color:#091f2d}
 .tw-page .tw-current-link:focus-visible{outline:3px solid #fff;outline-offset:3px}
 @media(max-width:760px){.tw-page .tw-current{display:block;margin:17px 0 13px;padding:16px 13px}.tw-page .tw-current-link{display:flex;width:100%;margin-top:13px}.tw-page .tw-current-copy>p:not(.tw-current-kicker){font-size:12px}}
+/* Group the two external sea-forecast references without changing the graphs. */
+.tw-page .tw-gpv{margin-top:-6px}
+.tw-page .tw-gpv .tw-current-link{background:#dbecf7;color:#102837}
+.tw-page .tw-gpv .tw-current-link:hover,.tw-page .tw-gpv .tw-current-link:focus-visible{background:#fff;color:#102837}
