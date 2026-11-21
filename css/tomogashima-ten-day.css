@@ -1,0 +1,67 @@
+/* Ten-day marine forecast: scoped to the Tomogashima page.
+   Bars show comparable magnitudes behind *smaller* numeric labels. */
+.tw-page .td10{margin:26px 0 0;color:#f2f9fc}
+.tw-page .td10-head{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:6px 12px;margin:0 0 12px}
+.tw-page .td10-head h2{color:#f7fcff;font-weight:900;font-size:clamp(21px,3.2vw,30px);line-height:1.3;margin:0}
+.tw-page .td10-head small{color:#94c9e6;font-size:11px;line-height:1.5}
+.tw-page .td10-box{border:1px solid #1684b9;border-radius:17px;background:linear-gradient(150deg,#06283f,#031a2c);overflow:hidden}
+.tw-page .td10-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:clamp(12px,1.6vw,15px);line-height:1.3;color:#fff}
+.tw-page .td10-table col:nth-child(1){width:18%}
+.tw-page .td10-table col:nth-child(2){width:12%}
+.tw-page .td10-table col:nth-child(3){width:31%}
+.tw-page .td10-table col:nth-child(4){width:25%}
+.tw-page .td10-table col:nth-child(5){width:14%}
+.tw-page .td10-table th,.tw-page .td10-table td{border-right:1px solid #285e78;border-bottom:1px solid #285e78;padding:9px 8px;text-align:center;vertical-align:middle}
+.tw-page .td10-table tr>*:last-child{border-right:0}
+.tw-page .td10-table tbody tr:last-child>*{border-bottom:0}
+.tw-page .td10-table thead th{background:rgba(3,42,64,.8);font-weight:900;font-size:clamp(11px,1.7vw,15px);white-space:nowrap}
+.tw-page .td10-table tbody tr{background:rgba(3,25,42,.3)}
+.tw-page .td10-table tbody tr:nth-child(even){background:rgba(10,49,70,.42)}
+.tw-page .td10-table tbody tr:first-child{background:linear-gradient(90deg,rgba(0,140,160,.32),rgba(8,76,89,.36));box-shadow:inset 0 0 0 1px rgba(35,231,238,.8)}
+.tw-page .td10-table tbody th{white-space:nowrap;color:#f6fbff;font-weight:900;font-size:clamp(12px,2vw,16px)}
+.tw-page .td10-table .td10-day{display:inline-block;margin-left:3px;font-size:.9em}
+.tw-page .td10-table .td10-sun{color:#ff6b79}
+.tw-page .td10-table .td10-sat{color:#4fe6ff}
+.tw-page .td10-table .td10-weather{font-size:clamp(19px,3.1vw,26px);line-height:1}
+.tw-page .td10-table .td10-wind-direction{display:flex;align-items:center;justify-content:center;gap:5px;color:#fff;font-weight:800;font-size:clamp(10px,1.4vw,13px)}
+.tw-page .td10-table .td10-arrow{font-size:18px;display:inline-block;line-height:1}
+.tw-page .td10-meter{display:flex;align-items:center;justify-content:center;min-width:0;min-height:31px}
+.tw-page .td10-track{height:28px;width:100%;min-width:0;border-radius:7px;position:relative;overflow:hidden;border:1px solid rgba(85,167,202,.18);background:rgba(48,96,122,.54)}
+.tw-page .td10-fill{position:absolute;inset:0 auto 0 0;width:var(--bar-percent);border-radius:6px;opacity:.93}
+.tw-page .td10-fill-wave{background:linear-gradient(90deg,#0586b8,#24dcf4)}
+.tw-page .td10-fill-wind{background:linear-gradient(90deg,#b45604,#ffae24)}
+.tw-page .td10-value{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;width:100%;height:100%;padding:0 2px;font-size:12px;font-weight:900;white-space:nowrap;color:#fff;text-shadow:0 1px 3px #001b31,0 0 3px #001b31;letter-spacing:-.01em}
+.tw-page .td10-value span{font-size:.8em;margin-left:2px}
+.tw-page .td10-empty{color:#99b6c6;font-size:12px}
+.tw-page .td10-status{min-height:0;margin:10px 12px 0;color:#a7d3e8;font-size:12px;line-height:1.5}
+.tw-page .td10-status:empty{display:none}
+.tw-page .td10-note{font-size:11px;color:#b7d0df;line-height:1.7;margin:11px 2px 0}
+@media(max-width:760px){
+ .tw-page .td10{margin-top:16px}
+ .tw-page .td10-head{margin-bottom:7px}
+ .tw-page .td10-head h2{font-size:19px}
+ .tw-page .td10-head small{font-size:10px}
+ .tw-page .td10-box{border-radius:11px}
+ .tw-page .td10-table col:nth-child(1){width:20%}
+ .tw-page .td10-table col:nth-child(2){width:11%}
+ .tw-page .td10-table col:nth-child(3){width:31%}
+ .tw-page .td10-table col:nth-child(4){width:26%}
+ .tw-page .td10-table col:nth-child(5){width:12%}
+ .tw-page .td10-table th,.tw-page .td10-table td{padding:6px 3px}
+ .tw-page .td10-table thead th{font-size:10px;line-height:1.2}
+ .tw-page .td10-table tbody th{font-size:11px}
+ .tw-page .td10-table .td10-weather{font-size:19px}
+ .tw-page .td10-track{height:26px;border-radius:5px}
+ .tw-page .td10-meter{min-height:28px}
+ .tw-page .td10-value{font-size:10.5px;letter-spacing:-.04em}
+ .tw-page .td10-table .td10-wind-direction{gap:1px;flex-direction:column;font-size:10px}
+ .tw-page .td10-table .td10-arrow{font-size:15px}
+ .tw-page .td10-status{margin:7px 5px 0;font-size:11px}
+ .tw-page .td10-note{font-size:10px}
+}
+@media(max-width:370px){
+ .tw-page .td10-table th,.tw-page .td10-table td{padding:5px 2px}
+ .tw-page .td10-table .td10-weather{font-size:18px}
+ .tw-page .td10-value{font-size:10px}
+ .tw-page .td10-table tbody th{font-size:10px}
+}

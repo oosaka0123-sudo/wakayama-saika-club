@@ -12,9 +12,11 @@
 <link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="../css/premium.css?v=20261119-nav1">
 <link rel="stylesheet" href="../css/tomogashima.css?v=20261121-nosummary1">
+<link rel="stylesheet" href="../css/tomogashima-ten-day.css?v=20261121-a1">
 <script src="../js/main.js?v=20261119-share1" defer></script>
 <script src="../js/footer.js?v=20261120-location1" defer></script>
 <script src="../js/tomogashima.js?v=20261121-nosummary1" defer></script>
+<script src="../js/tomogashima-ten-day.js?v=20261121-a1" defer></script>
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:title" content="友ヶ島灯台 一日の波・風・天気｜和歌山雑賀クラブ">
@@ -95,6 +97,29 @@
           </div>
         </div>
       </div>
+      <section class="td10" aria-labelledby="td10-title">
+        <header class="td10-head">
+          <h2 id="td10-title">🗓 10日間の海況予報</h2>
+          <small>友ヶ島灯台付近｜5:00〜17:00</small>
+        </header>
+        <div class="td10-box">
+          <table class="td10-table" id="td10-table" aria-describedby="td10-note">
+            <colgroup><col><col><col><col><col></colgroup>
+            <thead><tr>
+              <th scope="col">日付</th>
+              <th scope="col">天気</th>
+              <th scope="col">🌊 波高 (m)</th>
+              <th scope="col">💨 風速 (m/s)</th>
+              <th scope="col">風向</th>
+            </tr></thead>
+            <tbody id="td10-body">
+              <tr><td colspan="5">10日間の予報を取得しています…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="td10-status" id="td10-status" aria-live="polite"></p>
+        <p class="td10-note" id="td10-note">波高：5〜17時の最小〜最大／風速：同時間帯の平均／風向：同時間帯の代表風向／天気：11時の予報。水色・オレンジの棒は、この10日間内での相対比較です。モデル値が不足する日は「—」で表示し、推測補完しません。</p>
+      </section>
       <p class="tw-disclaimer">※ 友ヶ島灯台の実測値ではなく、Open-Meteoが提供する付近の気象・海況モデル予報です。沖合の格子点の値であり、航路・港内・釣り場の現況と異なります。出航前は必ず<a href="https://www.jma.go.jp/bosai/" target="_blank" rel="noopener noreferrer">気象庁の警報・注意報</a>と現地情報をご確認ください。データ：<a href="https://open-meteo.com/en/docs" target="_blank" rel="noopener noreferrer">Open-Meteo</a>／<a href="https://open-meteo.com/en/docs/marine-weather-api" target="_blank" rel="noopener noreferrer">Marine Weather API</a>。</p>
       <p class="tw-return"><a href="../#sea-forecast">← トップページの天気欄へ戻る</a></p>
     </div>
