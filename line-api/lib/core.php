@@ -11,7 +11,7 @@ const WSC_MAX_PHOTOS = 5;
 const WSC_DRAFT_IDLE_SECONDS = 3600;      // 送信忘れの下書きは1時間後に自動で「承認待ち」へ
 const WSC_DAILY_SUBMIT_LIMIT = 10;      // 1人あたり1日の投稿上限
 const WSC_EVENTS_PER_MINUTE = 20;       // 1人あたり1分間の操作上限（連打・荒らし対策）
-const WSC_SITE_DAILY_PUBLISH = 100;      // サイト全体の1日の自動掲載上限（超えた分は承認待ち）
+const WSC_SITE_DAILY_PUBLISH = 50;      // サイト全体の1日の自動掲載上限（超えた分は承認待ち）
 const WSC_REG_FAIL_LIMIT = 5;           // 合言葉の失敗は1人1日5回まで
 
 /**
