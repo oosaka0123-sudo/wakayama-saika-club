@@ -118,7 +118,7 @@ function wsc_submit_draft(array &$state, string $userKey): ?array
     $copy = $post;
     unset($post['_line_user']);
     $state['submits'][$userKey][] = time();
-    $state['submits'][$userKey] = array_values(array_filter($state['submits'][$userKey], function ($t) { return $t > time() - 86400; }));
+    $state['submits'][$userKey] = wsc_today_submit_times($state['submits'][$userKey]);
     return $copy;
 }
 
@@ -228,11 +228,23 @@ function wsc_delete_post(array &$state, string $id): bool
     return true;
 }
 
-function wsc_submits_today(array $state, string $userKey): int
+/**
+ * 1日とは日本時間の0:00から23:59まで。
+ * 以前の直近24時間方式だと前日のテスト投稿が翌朝もカウントされた。
+ */
+function wsc_today_submit_times(array $times, ?int $now = null): array
 {
-    return count(array_filter($state['submits'][$userKey] ?? [], function ($t) { return $t > time() - 86400; }));
+    $now = $now ?? time();
+    $midnight = strtotime(date('Y-m-d', $now) . ' 00:00:00');
+    return array_values(array_filter($times, static function ($t) use ($midnight, $now): bool {
+        return is_numeric($t) && (int)$t >= $midnight && (int)$t <= $now;
+    }));
 }
 
+function wsc_submits_today(array $state, string $userKey, ?int $now = null): int
+{
+    return count(wsc_today_submit_times((array)($state['submits'][$userKey] ?? []), $now));
+}
 /**
  * 放置下書きの自動確定（Webhookが来なくても動くよう、定期呼び出し・公開APIから実行）。
  * 50秒に1回までに制限。確定した件数を返し、受付通知はプッシュで送る。
