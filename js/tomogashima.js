@@ -94,7 +94,7 @@
     $("tw-next").disabled = selectedDay === 2;
   }
   function renderTable(rows) {
-    var ids = ["tw-hours-row","tw-weather-row","tw-wave-row","tw-period-row","tw-wind-row","tw-gust-row","tw-direction-row"];
+    var ids = ["tw-hours-row","tw-wave-row","tw-period-row","tw-wind-row","tw-gust-row","tw-direction-row"];
     ids.forEach(function (id) {
       var row = $(id);
       while (row.children.length > 1) row.lastChild.remove();
@@ -119,8 +119,6 @@
       w.append(small, icon);
       weatherStrip.appendChild(w);
 
-      var weather = node("td",sel?"tw-selected":"",weatherIcon(p.weather,p.hour));
-      $("tw-weather-row").appendChild(weather);
       [["tw-wave-row", fmt(p.wave,1)],["tw-period-row",fmt(p.period,1)],
        ["tw-wind-row",fmt(p.wind,1)],["tw-gust-row",fmt(p.gust,1)]].forEach(function (item) {
         $(item[0]).appendChild(node("td",sel?"tw-selected":"",item[1]));
