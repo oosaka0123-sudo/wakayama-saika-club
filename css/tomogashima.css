@@ -1,0 +1,91 @@
+/* Tomogashima Lighthouse forecast special page – isolated styles only. */
+.tw-page{background:#061827;color:#f2f8fc}
+.tw-page .site-header{z-index:60}
+.tw-page .tw-hero{position:relative;isolation:isolate;margin-top:var(--hh);padding:clamp(39px,5.4vw,76px) 20px 30px;min-height:240px;background:linear-gradient(90deg,rgba(1,17,30,.94),rgba(4,30,53,.78) 64%,rgba(3,26,46,.36)),url("../assets/photos/21993.jpg") center 51%/cover no-repeat;overflow:hidden}
+.tw-page .tw-hero-content{max-width:1200px;margin:auto;position:relative}
+.tw-page .tw-eyebrow{margin:0 0 12px;letter-spacing:.22em;color:#8cd5ff;font:800 12px/1.4 Arial,sans-serif}
+.tw-page .tw-hero h1{color:#fff;font-size:clamp(32px,5.4vw,58px);line-height:1.26;font-weight:900;margin:0}
+.tw-page .tw-hero h1 span{display:block;font-size:.67em;margin-top:5px}
+.tw-page .tw-tagline{margin:14px 0 0;font-size:clamp(15px,2.6vw,21px);color:#d9ebf5;font-weight:700}
+.tw-page .tw-image-caption{font-size:11px;color:#b4cbd9;margin:18px 0 0}
+.tw-page .tw-dashboard{background:linear-gradient(180deg,#06243a 0%,#061827 65%);padding:22px 14px 64px}
+.tw-page .tw-container{width:min(100%,1200px);margin:0 auto}
+.tw-page .tw-daybar{display:flex;gap:15px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:17px}
+.tw-page .tw-date-nav{display:flex;align-items:center;gap:10px}
+.tw-page .tw-date-nav h2{font-size:clamp(16px,2.9vw,24px);line-height:1.35;margin:0;color:#fff;min-width:170px;text-align:center}
+.tw-page .tw-date-nav button{cursor:pointer;color:#fff;background:#0b2b40;border:1px solid #51758a;border-radius:999px;min-height:42px;padding:5px 15px;font-size:15px;font-weight:800}
+.tw-page .tw-date-nav button:disabled{opacity:.37;cursor:not-allowed}
+.tw-page .tw-date-nav button:not(:disabled):hover{background:#14445f}
+.tw-page .tw-point{font-weight:800;font-size:14px;color:#d9ecf8}
+.tw-page .tw-current{display:grid;grid-template-columns:1.15fr repeat(5,1fr);border:1px solid #2276a1;background:linear-gradient(120deg,#063452,#051b30);border-radius:16px;padding:12px 8px;gap:0;box-shadow:0 10px 24px #00101d66;margin:0 0 30px}
+.tw-page .tw-current>div{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-right:1px solid #4e799266;padding:5px 8px;min-width:0}
+.tw-page .tw-current>div:last-child{border-right:0}
+.tw-page .tw-current small{display:block;color:#c2d8e8;font-size:12px;font-weight:800;line-height:1.5;white-space:nowrap}
+.tw-page .tw-current strong{font-size:clamp(17px,2.5vw,27px);line-height:1.35;white-space:nowrap;font-weight:900;letter-spacing:-.02em}
+.tw-page .tw-current-time{background:#ce6119;border-radius:10px;color:#fff}
+.tw-page .tw-current>div:nth-child(2) strong,.tw-page .tw-current>div:nth-child(3) strong{color:#55d5ff}
+.tw-page .tw-current>div:nth-child(4) strong,.tw-page .tw-current>div:nth-child(5) strong{color:#ff8b3b}
+.tw-page .tw-toolbar{display:flex;gap:20px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;margin:0 0 14px}
+.tw-page .tw-heading{display:flex;gap:12px;align-items:center}
+.tw-page .tw-heading-symbol{font-size:31px}
+.tw-page .tw-heading h2{color:#fff;font-size:clamp(23px,3.4vw,34px);line-height:1.3;margin:0}
+.tw-page .tw-heading p{margin:3px 0 0;font-size:13px;line-height:1.5;color:#b3cfdf}
+.tw-page .tw-legend{display:flex;gap:16px;flex-wrap:wrap;color:#eaf7ff;font-size:13px;font-weight:700}
+.tw-page .tw-legend>span{display:flex;gap:7px;align-items:center}
+.tw-page .tw-legend-bar{display:inline-block;width:16px;height:15px;background:linear-gradient(#57eaff,#00a3d6);border-radius:2px}
+.tw-page .tw-legend-line{display:inline-block;width:21px;height:0;border-top:4px solid #ff8b31;position:relative}
+.tw-page .tw-legend-line:after{content:"";position:absolute;width:8px;height:8px;top:-6px;left:7px;background:#ff8b31;border-radius:50%}
+.tw-page .tw-panel{border:1px solid #207cab;border-radius:20px;padding:16px;background:linear-gradient(180deg,rgba(6,40,67,.95),rgba(2,24,42,.98));box-shadow:0 12px 25px #0005}
+.tw-page .tw-hint{display:flex;gap:16px;justify-content:space-between;align-items:center;flex-wrap:wrap;font-size:12px;color:#b7d2e3;margin-bottom:10px}
+.tw-page .tw-hint span:first-child{color:#91dbfa;font-weight:800}
+.tw-page .tw-status{margin:4px 0 10px;font-size:13px;color:#dbeaf4;line-height:1.5}
+.tw-page .tw-status:empty{display:none}
+.tw-page .tw-scroller{overflow:auto;max-width:100%;overscroll-behavior-x:contain;scrollbar-color:#2797c3 #06253b;scrollbar-width:thin}
+.tw-page .tw-scroller:focus-visible{outline:3px solid #ff8b31;outline-offset:2px}
+.tw-page .tw-rail{width:1080px;min-width:1080px}
+.tw-page .tw-weather-strip{display:grid;grid-template-columns:144px repeat(13,72px);align-items:stretch;background:#071b2d;border:1px solid #284f69;border-radius:10px 10px 0 0;overflow:hidden}
+.tw-page .tw-weather-strip>div{min-height:61px;display:flex;align-items:center;justify-content:center;flex-direction:column;border-right:1px solid #2d5067;font-size:25px}
+.tw-page .tw-weather-strip>div:last-child{border-right:0}
+.tw-page .tw-weather-strip small{font-size:11px;font-weight:800;color:#c4deee;line-height:1}
+.tw-page .tw-weather-strip .tw-weather-title{font-size:15px;color:#dceef8;font-weight:800}
+.tw-page .tw-weather-strip .is-selected{background:#6a3a2580}
+.tw-page #tw-combo-chart{display:block;width:1080px;height:330px;background:linear-gradient(180deg,#072940,#061a2c)}
+.tw-page .tw-table{border-collapse:collapse;table-layout:fixed;width:1080px;margin:0;background:rgba(4,27,45,.92);color:#eaf5ff;font-size:14px;line-height:1.4}
+.tw-page .tw-table th,.tw-page .tw-table td{border:1px solid #2f5369;padding:8px 3px;text-align:center;white-space:nowrap;vertical-align:middle}
+.tw-page .tw-table tr>*:first-child{width:144px;text-align:left;padding-left:12px;font-weight:800;background:#092b41;color:#eaf7ff}
+.tw-page .tw-table tr>*:not(:first-child){width:72px}
+.tw-page .tw-table thead th{background:#12384d;font-weight:900}
+.tw-page .tw-table button{display:block;width:100%;border:0;background:transparent;color:inherit;cursor:pointer;font:inherit;font-weight:900;padding:6px 0}
+.tw-page .tw-table button:hover{color:#7ee3ff}
+.tw-page .tw-table .tw-selected{background:#6d3d20a8!important;color:#fff!important;font-weight:900}
+.tw-page .tw-table tr[id="tw-wave-row"] td{color:#72e5ff;font-weight:850}
+.tw-page .tw-table tr[id="tw-wind-row"] td,.tw-page .tw-table tr[id="tw-gust-row"] td{color:#ff9c49;font-weight:850}
+.tw-page .tw-table .tw-direction-arrow{font-weight:900;font-size:22px;display:block;color:#eaf6ff;line-height:1.15}
+.tw-page .tw-table .tw-direction-label{font-size:11px;display:block;color:#bcd4e2}
+.tw-page .tw-disclaimer{color:#b7cddd;font-size:12px;line-height:1.8;max-width:1000px;margin:24px 0 14px}
+.tw-page .tw-disclaimer a{color:#effaff;text-decoration:underline}
+.tw-page .tw-return{margin:16px 0}
+.tw-page .tw-return a{color:#fff;font-size:14px;font-weight:800;text-underline-offset:4px}
+@media(max-width:760px){
+.tw-page .tw-hero{min-height:190px;padding:28px 18px 22px}
+.tw-page .tw-hero h1{font-size:clamp(27px,7vw,40px)}
+.tw-page .tw-dashboard{padding:18px 10px 45px}
+.tw-page .tw-daybar{align-items:flex-start}
+.tw-page .tw-date-nav{width:100%;justify-content:space-between;gap:5px}
+.tw-page .tw-date-nav h2{min-width:0;font-size:17px}
+.tw-page .tw-date-nav button{padding:7px 10px;font-size:13px;min-height:40px}
+.tw-page .tw-point{font-size:12px}
+.tw-page .tw-current{grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:22px;padding:7px 3px;gap:0}
+.tw-page .tw-current>div{padding:9px 3px;border-right:1px solid #4e799266}
+.tw-page .tw-current>div:nth-child(3){border-right:0}
+.tw-page .tw-current>div:nth-child(-n+3){border-bottom:1px solid #4e799266}
+.tw-page .tw-current small{font-size:11px}
+.tw-page .tw-current strong{font-size:clamp(16px,4.8vw,23px)}
+.tw-page .tw-toolbar{gap:10px}
+.tw-page .tw-heading h2{font-size:23px}
+.tw-page .tw-heading-symbol{font-size:26px}
+.tw-page .tw-legend{font-size:11px}
+.tw-page .tw-panel{padding:12px 8px;border-radius:15px}
+.tw-page .tw-hint{font-size:11px;gap:6px}
+}
+@media(prefers-reduced-motion:reduce){.tw-page *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
