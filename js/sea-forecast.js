@@ -1,4 +1,4 @@
-/* Open-Meteo weather + marine forecasts for Nishihama; model estimates, not marine-navigation advice. */
+/* Open-Meteo weather + marine forecasts near Tomogashima lighthouse (cultural heritage coordinate). Estimates, not navigation advice. */
 (function () {
   "use strict";
   var root = document.getElementById("sea-forecast");
@@ -18,7 +18,7 @@
     waveDir: document.getElementById("sf-wave-dir"),
     period: document.getElementById("sf-period")
   };
-  var lat = "34.2089", lon = "135.1497";
+  var lat = "34.281047", lon = "135.000879";
   var wApi = new URL("https://api.open-meteo.com/v1/forecast");
   var mApi = new URL("https://marine-api.open-meteo.com/v1/marine");
   [wApi, mApi].forEach(function (u) {
@@ -106,7 +106,7 @@
     });
     if (dataW || dataM) {
       var display = day ? t.slice(5, 7) + "月" + t.slice(8, 10) + "日 7:00" : "現在（予報値）";
-      updated.textContent = "表示時刻：" + display + " ／ 閲覧時に予報を取得・約30分ごとに更新";
+      updated.textContent = "予報取得：" + new Date(lastSuccess).toLocaleString("ja-JP", {timeZone:"Asia/Tokyo", month:"numeric", day:"numeric", hour:"2-digit", minute:"2-digit"}) + " ／ 対象：" + display;
     }
   }
   function fetchJson(url) {
