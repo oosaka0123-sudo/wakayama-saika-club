@@ -247,7 +247,8 @@
   }
   function readJson(url) {
     return fetch(url,{mode:"cors",credentials:"omit",cache:"no-store"})
-      .then(function (r) {if(!r.ok)throw new Error("HTTP "+r.status);return r.json();});
+      .then(function (r) {if(!r.ok)throw new Error("HTTP "+r.status);return r.json();})
+      .then(function (data) {if(!data.hourly || !Array.isArray(data.hourly.time))throw new Error("Hourly forecast unavailable");return data;});
   }
   function refresh() {
     if(loading) return;
