@@ -120,6 +120,20 @@
         <p class="td10-status" id="td10-status" aria-live="polite"></p>
         <p class="td10-note" id="td10-note">波高：5〜17時の最小〜最大／風速：同時間帯の平均／風向：同時間帯の代表風向／天気：11時の予報。水色・オレンジの棒は、この10日間内での相対比較です。モデル値が不足する日は「—」で表示し、推測補完しません。</p>
       </section>
+      <section class="tw-windy" aria-labelledby="tw-windy-title">
+        <div class="tw-windy-head">
+          <div>
+            <p class="tw-current-kicker">LIVE WEATHER MAP / WINDY</p>
+            <h2 id="tw-windy-title">Windy｜友ヶ島周辺の風</h2>
+            <p>友ヶ島灯台付近を中心に、風向・風速の予報マップを表示しています。初期表示は「風」です。地図を動かして大阪湾や紀淡海峡も確認できます。</p>
+          </div>
+          <a class="tw-windy-open" href="https://www.windy.com/?wind,34.281,135.001,10" target="_blank" rel="noopener noreferrer">Windyで大きく見る <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="tw-windy-frame">
+          <iframe title="Windy｜友ヶ島灯台周辺の風向・風速予報マップ。初期表示は風" loading="lazy" width="850" height="430" src="https://embed.windy.com/embed.html?type=map&amp;location=coordinates&amp;metricRain=default&amp;metricTemp=default&amp;metricWind=default&amp;zoom=10&amp;overlay=wind&amp;product=ecmwf&amp;level=surface&amp;lat=34.281&amp;lon=135.001&amp;message=true" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
+        <p class="tw-windy-note">※ Windyの風は予報モデル値です。友ヶ島灯台の実測値ではありません。出航時は気象庁の警報・注意報や現地の状況も確認してください。</p>
+      </section>
       <section class="tw-current" aria-labelledby="tw-current-title">
         <div class="tw-current-copy">
           <p class="tw-current-kicker">TIDAL CURRENT / MIRC</p>

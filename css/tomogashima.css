@@ -147,3 +147,17 @@
 .tw-page .tw-gpv{margin-top:-6px}
 .tw-page .tw-gpv .tw-current-link{background:#dbecf7;color:#102837}
 .tw-page .tw-gpv .tw-current-link:hover,.tw-page .tw-gpv .tw-current-link:focus-visible{background:#fff;color:#102837}
+
+/* Windy official embed: Tomogashima lighthouse, initial wind overlay. */
+.tw-page .tw-windy{margin:22px 0 18px;padding:18px;background:#092b42;border:1px solid #32637c;border-radius:12px}
+.tw-page .tw-windy-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px}
+.tw-page .tw-windy-head>div{flex:1;min-width:0}
+.tw-page .tw-windy h2{font-size:clamp(18px,2.7vw,24px);line-height:1.4;color:#fff;margin:0 0 7px}
+.tw-page .tw-windy-head p:not(.tw-current-kicker){font-size:13px;line-height:1.8;color:#d3e5ed;margin:0}
+.tw-page .tw-windy-open{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:9px 15px;background:#f08a36;border-radius:7px;text-decoration:none;color:#0b2030;font-size:13px;font-weight:800;white-space:nowrap}
+.tw-page .tw-windy-open:hover,.tw-page .tw-windy-open:focus-visible{background:#ffc18d;color:#0b2030}
+.tw-page .tw-windy-open:focus-visible{outline:3px solid white;outline-offset:3px}
+.tw-page .tw-windy-frame{width:100%;overflow:hidden;border-radius:9px;background:#092333;min-height:315px}
+.tw-page .tw-windy-frame iframe{display:block;border:0;width:100%;height:clamp(315px,43vw,475px)}
+.tw-page .tw-windy-note{font-size:11px;line-height:1.7;color:#b7d0df;margin:11px 2px 0}
+@media(max-width:760px){.tw-page .tw-windy{padding:12px;margin:16px 0}.tw-page .tw-windy-head{display:block}.tw-page .tw-windy h2{font-size:19px}.tw-page .tw-windy-head p:not(.tw-current-kicker){font-size:12px}.tw-page .tw-windy-open{display:flex;width:100%;margin-top:12px}.tw-page .tw-windy-frame iframe{height:345px}}
