@@ -161,3 +161,17 @@
 .tw-page .tw-windy-frame iframe{display:block;border:0;width:100%;height:clamp(315px,43vw,475px)}
 .tw-page .tw-windy-note{font-size:11px;line-height:1.7;color:#b7d0df;margin:11px 2px 0}
 @media(max-width:760px){.tw-page .tw-windy{padding:12px;margin:16px 0}.tw-page .tw-windy-head{display:block}.tw-page .tw-windy h2{font-size:19px}.tw-page .tw-windy-head p:not(.tw-current-kicker){font-size:12px}.tw-page .tw-windy-open{display:flex;width:100%;margin-top:12px}.tw-page .tw-windy-frame iframe{height:345px}}
+/* Companion hourly forecasts: external providers, no third-party scraping or embeds. */
+.tw-page .tw-hourly-links{margin:20px 0 19px;padding:18px;border:1px solid #32637c;border-radius:12px;background:#092b42}
+.tw-page .tw-hourly-links-head{margin-bottom:14px}
+.tw-page .tw-hourly-links-head h2{margin:5px 0 6px;font-size:clamp(18px,2.7vw,24px);line-height:1.45;color:#fff}
+.tw-page .tw-hourly-links-head p{margin:0;color:#d3e5ed;font-size:13px;line-height:1.75}
+.tw-page .tw-hourly-links-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.tw-page .tw-hourly-link{display:flex;flex-direction:column;gap:7px;min-width:0;padding:17px 17px 14px;border:1px solid #66889d;border-radius:9px;background:#11364d;color:#fff;text-decoration:none}
+.tw-page .tw-hourly-link:hover,.tw-page .tw-hourly-link:focus-visible{background:#1a465f;border-color:#ffb779}
+.tw-page .tw-hourly-link:focus-visible{outline:3px solid #ffb779;outline-offset:2px}
+.tw-page .tw-hourly-link-provider{font-size:12px;font-weight:800;color:#ffb779}
+.tw-page .tw-hourly-link strong{font-size:clamp(15px,1.8vw,18px);line-height:1.5}
+.tw-page .tw-hourly-link-description{font-size:13px;line-height:1.7;color:#c5dae6}
+.tw-page .tw-hourly-link-cta{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;padding-top:9px;border-top:1px solid #4a6c82;font-size:14px;font-weight:900;color:#fff}
+@media(max-width:760px){.tw-page .tw-hourly-links{margin:15px 0;padding:13px}.tw-page .tw-hourly-links-grid{grid-template-columns:1fr;gap:10px}.tw-page .tw-hourly-link{padding:14px}.tw-page .tw-hourly-link-description{font-size:12px}}
