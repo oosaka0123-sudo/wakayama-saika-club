@@ -17,14 +17,6 @@
 .tw-page .tw-date-nav button:disabled{opacity:.37;cursor:not-allowed}
 .tw-page .tw-date-nav button:not(:disabled):hover{background:#14445f}
 .tw-page .tw-point{font-weight:800;font-size:14px;color:#d9ecf8}
-.tw-page .tw-current{display:grid;grid-template-columns:1.15fr repeat(5,1fr);border:1px solid #2276a1;background:linear-gradient(120deg,#063452,#051b30);border-radius:16px;padding:12px 8px;gap:0;box-shadow:0 10px 24px #00101d66;margin:0 0 30px}
-.tw-page .tw-current>div{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-right:1px solid #4e799266;padding:5px 8px;min-width:0}
-.tw-page .tw-current>div:last-child{border-right:0}
-.tw-page .tw-current small{display:block;color:#c2d8e8;font-size:12px;font-weight:800;line-height:1.5;white-space:nowrap}
-.tw-page .tw-current strong{font-size:clamp(17px,2.5vw,27px);line-height:1.35;white-space:nowrap;font-weight:900;letter-spacing:-.02em}
-.tw-page .tw-current-time{background:#ce6119;border-radius:10px;color:#fff}
-.tw-page .tw-current>div:nth-child(2) strong,.tw-page .tw-current>div:nth-child(3) strong{color:#55d5ff}
-.tw-page .tw-current>div:nth-child(4) strong,.tw-page .tw-current>div:nth-child(5) strong{color:#ff8b3b}
 .tw-page .tw-toolbar{display:flex;gap:20px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;margin:0 0 14px}
 .tw-page .tw-heading{display:flex;gap:12px;align-items:center}
 .tw-page .tw-heading-symbol{font-size:31px}
@@ -75,12 +67,6 @@
 .tw-page .tw-date-nav h2{min-width:0;font-size:17px}
 .tw-page .tw-date-nav button{padding:7px 10px;font-size:13px;min-height:40px}
 .tw-page .tw-point{font-size:12px}
-.tw-page .tw-current{grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:22px;padding:7px 3px;gap:0}
-.tw-page .tw-current>div{padding:9px 3px;border-right:1px solid #4e799266}
-.tw-page .tw-current>div:nth-child(3){border-right:0}
-.tw-page .tw-current>div:nth-child(-n+3){border-bottom:1px solid #4e799266}
-.tw-page .tw-current small{font-size:11px}
-.tw-page .tw-current strong{font-size:clamp(16px,4.8vw,23px)}
 .tw-page .tw-toolbar{gap:10px}
 .tw-page .tw-heading h2{font-size:23px}
 .tw-page .tw-heading-symbol{font-size:26px}
@@ -109,11 +95,6 @@
 .tw-page .tw-date-nav h2{font-size:15px}
 .tw-page .tw-date-nav button{min-height:36px;padding:5px 10px;font-size:12px}
 .tw-page .tw-point{font-size:11px}
-.tw-page .tw-current{padding:4px 2px;border-radius:12px;margin:0 0 12px}
-.tw-page .tw-current>div{padding:5px 2px;gap:0}
-.tw-page .tw-current small{font-size:10px;line-height:1.35}
-.tw-page .tw-current strong{font-size:clamp(15px,4.2vw,18px);line-height:1.25}
-.tw-page .tw-current-time{border-radius:8px}
 .tw-page .tw-toolbar{margin-bottom:7px;gap:5px}
 .tw-page .tw-heading{gap:6px}
 .tw-page .tw-heading h2{font-size:20px}
