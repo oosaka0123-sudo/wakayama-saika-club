@@ -4,14 +4,12 @@
   var iframe = document.getElementById("tw-windy-map");
   if (!iframe) return;
   var badge = document.getElementById("tw-windy-badge");
-  var model = document.getElementById("tw-windy-model");
   var open = document.getElementById("tw-windy-open");
   var loader = document.getElementById("tw-windy-loader");
   var loaderText = document.getElementById("tw-windy-loader-text");
   var layerButtons = document.querySelectorAll("[data-windy-layer]");
-  var unitButtons = document.querySelectorAll("[data-windy-unit]");
   var lat = "34.281", lon = "135.001", zoom = "10";
-  var selectedLayer = "wind", selectedUnit = "kt", fallbackTimer = null;
+  var selectedLayer = "wind", fallbackTimer = null;
   var layers = {
     wind: { label: "風", overlay: "wind", product: "ecmwf", model: "ECMWF" },
     waves: { label: "波", overlay: "waves", product: "ecmwfWaves", model: "ECMWF Waves" },
@@ -36,14 +34,8 @@
       button.classList.toggle("is-active", active);
       button.setAttribute("aria-pressed", String(active));
     });
-    unitButtons.forEach(function (button) {
-      var active = button.getAttribute("data-windy-unit") === selectedUnit;
-      button.classList.toggle("is-active", active);
-      button.setAttribute("aria-pressed", String(active));
-    });
     var chosen = layers[selectedLayer];
     badge.textContent = "表示中：" + chosen.label;
-    model.textContent = "モデル：" + chosen.model;
     iframe.title = "Windy｜友ヶ島灯台付近の" + chosen.label + "の予報マップ";
     open.href = "https://www.windy.com/?" + chosen.overlay + "," + lat + "," + lon + "," + zoom;
   }
@@ -52,7 +44,7 @@
     var url = new URL("https://embed.windy.com/embed.html");
     var params = {
       type: "map", location: "coordinates", metricRain: "mm",
-      metricTemp: "°C", metricWind: selectedUnit, zoom: zoom,
+      metricTemp: "°C", metricWind: "m/s", zoom: zoom,
       overlay: chosen.overlay, product: chosen.product,
       level: "surface", lat: lat, lon: lon, message: "true"
     };
@@ -69,12 +61,7 @@
       reload();
     });
   });
-  unitButtons.forEach(function (button) {
-    button.addEventListener("click", function () {
-      var next = button.getAttribute("data-windy-unit");
-      if ((next !== "kt" && next !== "m/s") || selectedUnit === next) return;
-      selectedUnit = next;
-      repaint();
+  repaint();
       reload();
     });
   });
