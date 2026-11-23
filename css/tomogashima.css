@@ -165,13 +165,6 @@
 .tw-page .tw-windy-tab{display:flex;align-items:center;justify-content:center;gap:5px;width:100%;min-width:0;min-height:46px;padding:9px 4px;border:0;border-radius:9px;background:transparent;color:#a6bdd4;font-size:14px;font-weight:800;cursor:pointer;transition:background .16s,color .16s}
 .tw-page .tw-windy-tab:not(.is-active):hover{background:#112c47;color:#fff}
 .tw-page .tw-windy-tab.is-active{background:#f39221;color:#061423;box-shadow:0 3px 8px #0004}
-.tw-page .tw-windy-options{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap;margin:0 1px 12px;font-size:11px;color:#a6bdd4}
-.tw-page .tw-windy-model{display:flex;align-items:center;gap:6px;min-width:0}
-.tw-page .tw-windy-blue-dot{flex:0 0 7px;width:7px;height:7px;background:#38bdf8;border-radius:50%}
-.tw-page .tw-windy-units{display:flex;align-items:center;gap:6px}
-.tw-page .tw-windy-unit-group{display:flex;gap:3px;padding:3px;border:1px solid #1d3b5a;border-radius:10px;background:#061423}
-.tw-page .tw-windy-unit{min-width:39px;min-height:32px;padding:4px 7px;border:0;border-radius:7px;background:transparent;color:#a6bdd4;font-size:12px;font-weight:800;cursor:pointer}
-.tw-page .tw-windy-unit.is-active{background:#f39221;color:#061423}
 .tw-page .tw-windy-frame{position:relative;width:100%;min-height:420px;overflow:hidden;border:1px solid #1d3b5a;border-radius:12px;background:#061423}
 .tw-page .tw-windy-frame iframe{display:block;width:100%;height:420px;border:0}
 .tw-page .tw-windy-loader{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#061423e8;color:#cad9e7;font-size:12px;font-weight:700}
