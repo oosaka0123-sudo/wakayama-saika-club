@@ -11,13 +11,13 @@
 <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg?v=20261119-boat">
 <link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="../css/premium.css?v=20261119-nav1">
-<link rel="stylesheet" href="../css/tomogashima.css?v=20261123-tabs1">
+<link rel="stylesheet" href="../css/tomogashima.css?v=20261123-rowless">
 <link rel="stylesheet" href="../css/tomogashima-ten-day.css?v=20261121-a1">
 <script src="../js/main.js?v=20261119-share1" defer></script>
 <script src="../js/footer.js?v=20261121-forecastnav1" defer></script>
 <script src="../js/tomogashima.js?v=20261121-no-duplicate-weather" defer></script>
 <script src="../js/tomogashima-ten-day.js?v=20261121-a1" defer></script>
-<script src="../js/tomogashima-windy.js?v=20261123-tabs1" defer></script>
+<script src="../js/tomogashima-windy.js?v=20261123-rowless" defer></script>
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:title" content="友ヶ島灯台 一日の波・風・天気｜和歌山雑賀クラブ">
@@ -139,18 +139,9 @@
           <button type="button" class="tw-windy-tab" data-windy-layer="waves" aria-pressed="false"><span aria-hidden="true">🌊</span> 波</button>
           <button type="button" class="tw-windy-tab" data-windy-layer="currents" aria-pressed="false"><span aria-hidden="true">⚓</span> 海流</button>
         </div>
-        <div class="tw-windy-options">
-          <span class="tw-windy-model"><span class="tw-windy-blue-dot" aria-hidden="true"></span><span id="tw-windy-model">モデル：ECMWF</span></span>
-          <div class="tw-windy-units"><span>風速単位：</span>
-            <div class="tw-windy-unit-group" role="group" aria-label="風速表示の単位">
-              <button type="button" class="tw-windy-unit is-active" data-windy-unit="kt" aria-pressed="true">kt</button>
-              <button type="button" class="tw-windy-unit" data-windy-unit="m/s" aria-pressed="false">m/s</button>
-            </div>
-          </div>
-        </div>
         <div class="tw-windy-frame">
           <div class="tw-windy-loader" id="tw-windy-loader" role="status" aria-live="polite" hidden><span class="tw-windy-spinner" aria-hidden="true"></span><span id="tw-windy-loader-text">読み込み中…</span></div>
-          <iframe id="tw-windy-map" title="Windy｜友ヶ島灯台付近の風の予報マップ" loading="lazy" width="850" height="430" src="https://embed.windy.com/embed.html?type=map&amp;location=coordinates&amp;metricRain=mm&amp;metricTemp=%C2%B0C&amp;metricWind=kt&amp;zoom=10&amp;overlay=wind&amp;product=ecmwf&amp;level=surface&amp;lat=34.281&amp;lon=135.001&amp;message=true" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+          <iframe id="tw-windy-map" title="Windy｜友ヶ島灯台付近の風の予報マップ" loading="lazy" width="850" height="430" src="https://embed.windy.com/embed.html?type=map&amp;location=coordinates&amp;metricRain=mm&amp;metricTemp=%C2%B0C&amp;metricWind=m%2Fs&amp;zoom=10&amp;overlay=wind&amp;product=ecmwf&amp;level=surface&amp;lat=34.281&amp;lon=135.001&amp;message=true" referrerpolicy="strict-origin-when-cross-origin"></iframe>
         </div>
         <p class="tw-windy-note">※ Windyは予報・解析モデルの表示で、友ヶ島灯台の実測値ではありません。海流は友ヶ島水道の潮汐による流れや転流時刻そのものではありません。<a href="#tw-current-title">潮流は下のMIRC予測</a>も確認し、出航時は気象庁の警報・注意報と現地情報を優先してください。</p>
       </section>
