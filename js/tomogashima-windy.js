@@ -62,8 +62,4 @@
     });
   });
   repaint();
-      reload();
-    });
-  });
-  repaint();
 })();
