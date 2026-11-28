@@ -25,6 +25,7 @@
           '<li><a href="' + base + 'location/">所在地・アクセス</a></li>',
           '<li><a href="' + base + 'join/">会員募集</a></li>',
           '<li><a href="' + base + 'contact/">お問い合わせ</a></li>',
+          '<li><a href="' + base + 'privacy/">プライバシーポリシー</a></li>',
         '</ul>',
       '</nav>',
       '<p class="copyright">© 2026 WAKAYAMA SAIKA CLUB. ALL RIGHTS RESERVED.</p>',
